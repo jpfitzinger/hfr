@@ -56,14 +56,35 @@ hfr <- function(
 
   cluster_method = match.arg(cluster_method)
 
+  if (is.null(nobs <- nrow(x)))
+    stop("'x' must be a matrix")
+  if (nobs == 0L)
+    stop("0 (non-NA) cases")
+  nvars <- ncol(x)
+  if (nvars == 0L) {
+    return(list(coefficients = numeric(), residuals = y,
+                fitted.values = 0 * y, dof = 0, clust = NULL,
+                intercept = intercept))
+  }
+  ny <- NCOL(y)
+  if (is.matrix(y) && ny == 1)
+    y <- drop(y)
+  if (ny > 1)
+    stop("'y' must be a single response variable")
+  if (NROW(y) != nobs)
+    stop("incompatible dimensions")
+
+  if (any(is.na(y)) || any(is.na(x)))
+    stop("'NA' values in 'x' or 'y'")
+
   if (is.null(penalty) & is.null(factors)) {
-    warning("Both 'penalty' and 'factors' are zero. Setting 'penalty = 0'")
+    warning("both 'penalty' and 'factors' are zero, setting 'penalty = 0'")
     penalty <- 0
   }
 
   if (!is.null(factors)) {
     if (factors > 1 || factors < 0) {
-      stop("'factors' must be between 0 and 1.")
+      stop("'factors' must be between 0 and 1")
     }
   }
 
@@ -72,9 +93,6 @@ hfr <- function(
   if (is.null(var_names)) var_names <- paste("X", 1:ncol(x), sep = ".")
   if (intercept) var_names <- c("intercept", var_names)
 
-  nobs = as.integer(dim(x)[1])
-  nvars = as.integer(dim(x)[2])
-
   if (is.null(q)) {
     q <- min(nvars, sqrt(nobs)) / nvars
   }
@@ -82,8 +100,15 @@ hfr <- function(
   if (any(apply(x, 2, sd)==0))
     stop("Features can not have a standard deviation of zero.")
 
-  if (standardize)
-    x <- data.matrix(scale(x))
+  if (standardize) {
+    standardize_values <- list(
+      mean = apply(x, 2, mean),
+      sd = apply(x, 2, sd)
+    )
+    x <- as.matrix(scale(x, center = standardize_values$mean, scale = standardize_values$sd))
+  } else {
+    standardize_values = NULL
+  }
 
   v = .get_level_reg(x, y, nvars, nobs, cluster_method, q, intercept)
 
@@ -120,10 +145,12 @@ hfr <- function(
 
   out <- list(
     coefficients = beta,
-    fitted = fitted,
+    fitted.values = as.numeric(fitted),
     residuals = resid,
     dof = v$dof,
     clust = v$clust,
+    intercept = intercept,
+    standardize_values = standardize_values,
     BIC = nobs * log(mean(resid^2)) + 2 * log(nobs) * sum(v$dof * opt.par)
   )
 
