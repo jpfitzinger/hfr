@@ -22,7 +22,7 @@ hfr(
 
 \item{penalty}{A penalty on the effective degrees of freedom of the regression.}
 
-\item{factors}{The target effective degrees of freedom of the regression.}
+\item{factors}{The target effective degrees of freedom of the regression as a percentage of nvars.}
 
 \item{q}{The quantile cut-off (in terms of information contributed) above which to consider levels in the hierarchy.}
 
@@ -58,11 +58,10 @@ reduces the number of levels used in the hierarchy. \code{q} represents a quanti
 information contributed by the levels. The default (\code{q = 1}) considers all levels.
 }
 \examples{
-# Load returns of assets or portfolios
 x = matrix(rnorm(100 * 20), 100, 20)
 y = rnorm(100)
-fit1 = glmnet(x, y)
-print(fit1)
+fit = hfr(x, y, factors = 0.5)
+coef(fit)
 
 }
 \references{

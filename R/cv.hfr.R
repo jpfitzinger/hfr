@@ -1,29 +1,18 @@
-#' @name hfr
-#' @title Fit a Hierarchical Feature Regression
+#' @name cv.hfr
+#' @title Cross validation for a Hierarchical Feature Regression
 #' @description The hierarchical feature regression is fitted by estimating a semi-supervised
 #' hierarchical graph based on bi-variate partial correlations, decomposing a least
 #' squares estimate along the estimated hierarchy and shrinking coefficients along the branches of the tree.
 #'
-#' @details Shrinkage can be imposed using two mechanisms: using a penalty on the effective degrees of
-#' freedom of the regression, or targetting an explicit effective degrees of freedom.
-#' Setting the argument \code{penalty} to a positive value, implements the former approach, while
-#' setting the argument \code{factors} to a value between 0 and 1 implements the latter.
-#' If neither \code{penalty} or \code{factors} is set, a linear regression with \code{penalty = 0} is
-#' estimated.
-#'
-#' Hierarchical clustering is performed using the \code{cluster}-package. If
-#' \code{cluster_method == 'DIANA'}, the function \code{cluster::diana} is used
-#' to compute a cluster dendrogram, otherwise the function \code{cluster::agnes(., method = cluster_method)}
-#' is used. Default is single-linkage agglomerative nesting.
-#'
-#' For high-dimensional problems, the hierarchy becomes very large. Setting \code{q} to a value below 1
-#' reduces the number of levels used in the hierarchy. \code{q} represents a quantile-cutoff of amount of
-#' information contributed by the levels. The default (\code{q = 1}) considers all levels.
+#' @details This function fits an HFR to a grid of penalty or factor values. The results is a
+#' matrix of coefficients with one column for each hyperparameter. By evaluating all hyperparameters
+#' in a single function, the speed of the algorithm can be improved substantially (e.g. by estimating
+#' level-specific regressions only once).
 #'
 #' @param x Input matrix, of dimension \eqn{(N\times p)}{(N x p)}; each row is an observation vector.
 #' @param y Response variable.
-#' @param penalty A penalty on the effective degrees of freedom of the regression.
-#' @param factors The target effective degrees of freedom of the regression as a percentage of nvars.
+#' @param penalty_grid A vector of penalties on the effective degrees of freedom of the regression.
+#' @param factors_grid A vector of target effective degrees of freedom of the regression.
 #' @param q The quantile cut-off (in terms of information contributed) above which to consider levels in the hierarchy.
 #' @param intercept Should intercept be fitted (default=TRUE).
 #' @param standardize Logical flag for x variable standardization prior to fitting the model.
@@ -35,7 +24,7 @@
 #' @examples
 #' x = matrix(rnorm(100 * 20), 100, 20)
 #' y = rnorm(100)
-#' fit = hfr(x, y, factors = 0.5)
+#' fit = cv.hfr(x, y, factors_grid = seq(0, 1, by = 0.1))
 #' coef(fit)
 #'
 #' @export
@@ -43,28 +32,34 @@
 #' @importFrom quadprog solve.QP
 
 
-hfr <- function(
+cv.hfr <- function(
   x,
   y,
-  penalty = NULL,
-  factors = NULL,
+  penalty_grid = NULL,
+  factors_grid = NULL,
   q = NULL,
   intercept = TRUE,
   standardize = TRUE,
   cluster_method = c("DIANA", "single", "complete", "average", "ward")
-  ) {
+) {
 
   cluster_method = match.arg(cluster_method)
 
-  if (is.null(penalty) & is.null(factors)) {
+  if (is.null(penalty_grid) & is.null(factors_grid)) {
     warning("Both 'penalty' and 'factors' are zero. Setting 'penalty = 0'")
-    penalty <- 0
+    penalty_grid <- 0
   }
 
-  if (!is.null(factors)) {
-    if (factors > 1 || factors < 0) {
+  if (!is.null(factors_grid)) {
+    if (any(factors_grid > 1) || any(factors_grid < 0)) {
       stop("'factors' must be between 0 and 1.")
     }
+  }
+
+  if (!is.null(penalty_grid)) {
+    grid_size <- length(penalty_grid)
+  } else {
+    grid_size <- length(factors_grid)
   }
 
   # Get feature names
@@ -95,31 +90,46 @@ hfr <- function(
   Amat <- cbind(Amat, -Amat)
   bvec <- c(rep(0, length(v$dof)), -rep(1, length(v$dof)))
 
-  if (!is.null(penalty)) {
-    penalty_term <- -v$dof * penalty * 100
-    opt <- solve.QP(Dmat = Dmat,
-                              dvec = dvec + penalty_term,
-                              Amat = Amat,
-                              bvec = bvec)
-  } else {
-    dof_constraint <- 1 + factors * (nvars-1-1e-8)
-    opt <- solve.QP(Dmat = Dmat,
-                              dvec = dvec,
-                              Amat = cbind(v$dof, Amat),
-                              bvec = c(dof_constraint, bvec),
-                              meq = 1)
+  beta_mat <- c()
+  for (i in 1:grid_size) {
+
+    if (!is.null(penalty_grid)) {
+      penalty_term <- -v$dof * penalty_grid[i] * 100
+      opt <- solve.QP(Dmat = Dmat,
+                      dvec = dvec + penalty_term,
+                      Amat = Amat,
+                      bvec = bvec)
+    } else {
+      dof_constraint <- 1 + factors_grid[i] * (nvars-1-1e-8)
+      opt <- solve.QP(Dmat = Dmat,
+                      dvec = dvec,
+                      Amat = cbind(v$dof, Amat),
+                      bvec = c(dof_constraint, bvec),
+                      meq = 1)
+    }
+
+    opt.par <- opt$solution
+
+    beta <- rowSums(t(t(v$coef_mat) * opt.par))
+    names(beta) <- var_names
+    beta_mat <- cbind(beta_mat, beta)
+
   }
 
-  opt.par <- opt$solution
+  if (!is.null(penalty_grid)) {
+    colnames(beta_mat) <- penalty_grid
+  } else {
+    colnames(beta_mat) <- factors_grid
+  }
 
-  beta <- rowSums(t(t(v$coef_mat) * opt.par))
-  names(beta) <- var_names
 
-  if (intercept) fitted <- y - cbind(1, x) %*% beta else fitted <- y -  x %*% beta
+  if (intercept) fitted <- y - cbind(1, x) %*% beta_mat else fitted <- y -  x %*% beta_mat
   resid <- y - fitted
 
   out <- list(
-    coefficients = beta,
+    coefficients = beta_mat,
+    factors_grid = factors_grid,
+    penalty_grid = penalty_grid,
     fitted = fitted,
     residuals = resid,
     dof = v$dof,
