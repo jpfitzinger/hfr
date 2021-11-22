@@ -30,7 +30,7 @@
 #' @references
 #' Pfitzinger, J. (2021).
 #' Cluster Regularization via a Hierarchical Feature Regression.
-#' _arXiv [statML] 2107.04831_
+#' arXiv 2107.04831[statML]
 #'
 #' @examples
 #' x = matrix(rnorm(100 * 20), 100, 20)
@@ -83,6 +83,12 @@ hfr <- function(
   if (is.null(penalty) & is.null(factors)) {
     warning("both 'penalty' and 'factors' are zero, setting 'penalty = 0'")
     penalty <- 0
+  }
+
+  if (!is.null(penalty)) {
+    if (penalty < 0) {
+      stop("'penalty' must be a positive number")
+    }
   }
 
   if (!is.null(factors)) {
@@ -138,9 +144,9 @@ hfr <- function(
                               meq = 1)
   }
 
-  opt.par <- opt$solution
+  opt_par <- opt$solution
 
-  beta <- rowSums(t(t(v$coef_mat) * opt.par))
+  beta <- rowSums(t(t(v$coef_mat) * opt_par))
   names(beta) <- var_names
 
   # Rescale beta
@@ -165,11 +171,10 @@ hfr <- function(
     residuals = resid,
     x = x,
     y = y,
-    df = as.numeric(crossprod(v$dof, opt.par)),
-    cluster_model = list(cluster_object = v$clust, shrinkage_vector = opt.par,
+    df = as.numeric(crossprod(v$dof, opt_par)),
+    cluster_model = list(cluster_object = v$clust, shrinkage_vector = opt_par,
                          included_levels = v$included_levels),
-    intercept = intercept,
-    BIC = nobs * log(mean(resid^2)) + 2 * log(nobs) * sum(v$dof * opt.par)
+    intercept = intercept
   )
 
   class(out) <- "hfr"

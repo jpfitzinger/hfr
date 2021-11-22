@@ -11,9 +11,9 @@
 
 \item{newdata}{Matrix or data.frame of new values for \code{x} at which predictions are to be made.}
 
-\item{penalty}{The optimal penalty used for prediction. Only when \code{object} is of type 'cv.hfr'.}
+\item{penalty}{The optimal penalty used for prediction.}
 
-\item{factors}{The optimal factors used for prediction. Only when \code{object} is of type 'cv.hfr'.}
+\item{factors}{The optimal factors used for prediction.}
 
 \item{...}{additional methods passed to \code{predict}.}
 }

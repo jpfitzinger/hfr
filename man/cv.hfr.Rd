@@ -57,7 +57,7 @@ coef(fit)
 \references{
 Pfitzinger, J. (2021).
 Cluster Regularization via a Hierarchical Feature Regression.
-_arXiv [statML] 2107.04831_
+arXiv 2107.04831[statML]
 }
 \seealso{
 \code{hfr}, \code{coef} and \code{predict} methods

@@ -7,8 +7,8 @@
 #'
 #' @param object Fitted 'cv.hfr' model.
 #' @param newdata Matrix or data.frame of new values for \code{x} at which predictions are to be made.
-#' @param penalty The optimal penalty used for prediction. Only when \code{object} is of type 'cv.hfr'.
-#' @param factors The optimal factors used for prediction. Only when \code{object} is of type 'cv.hfr'.
+#' @param penalty The optimal penalty used for prediction.
+#' @param factors The optimal factors used for prediction.
 #' @param ... additional methods passed to \code{predict}.
 #' @return A vector of predicted values.
 #' @author Johann Pfitzinger

@@ -22,4 +22,4 @@ coef(fit)
 
 Pfitzinger, J. (2021).
 Cluster Regularization via a Hierarchical Feature Regression.
-_arXiv [statML] 2107.04831_
+_arXiv 2107.04831[statML]_

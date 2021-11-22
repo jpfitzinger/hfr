@@ -22,7 +22,7 @@
 #' @references
 #' Pfitzinger, J. (2021).
 #' Cluster Regularization via a Hierarchical Feature Regression.
-#' _arXiv [statML] 2107.04831_
+#' arXiv 2107.04831[statML]
 #'
 #' @examples
 #' x = matrix(rnorm(100 * 20), 100, 20)
@@ -73,13 +73,19 @@ cv.hfr <- function(
     stop("'NA' values in 'x' or 'y'")
 
   if (is.null(penalty_grid) & is.null(factors_grid)) {
-    warning("Both 'penalty' and 'factors' are zero. Setting 'penalty = 0'")
+    warning("Both 'penalty_grid' and 'factors_grid' are zero. Setting 'penalty_grid = 0'")
     penalty_grid <- 0
+  }
+
+  if (!is.null(penalty_grid)) {
+    if (any(penalty_grid < 0)) {
+      stop("each 'penalty' must be a positive number")
+    }
   }
 
   if (!is.null(factors_grid)) {
     if (any(factors_grid > 1) || any(factors_grid < 0)) {
-      stop("'factors' must be between 0 and 1.")
+      stop("each 'factors' must be between 0 and 1.")
     }
   }
 
@@ -122,6 +128,7 @@ cv.hfr <- function(
   bvec <- c(rep(0, length(v$dof)), -rep(1, length(v$dof)))
 
   beta_mat <- c()
+  opt_par_mat <- c()
   for (i in 1:grid_size) {
 
     if (!is.null(penalty_grid)) {
@@ -139,9 +146,9 @@ cv.hfr <- function(
                       meq = 1)
     }
 
-    opt.par <- opt$solution
+    opt_par <- opt$solution
 
-    beta <- rowSums(t(t(v$coef_mat) * opt.par))
+    beta <- rowSums(t(t(v$coef_mat) * opt_par))
     names(beta) <- var_names
 
     # Rescale beta
@@ -155,6 +162,7 @@ cv.hfr <- function(
     }
 
     beta_mat <- cbind(beta_mat, beta)
+    opt_par_mat <- cbind(opt_par_mat, opt_par)
 
   }
 
@@ -177,9 +185,10 @@ cv.hfr <- function(
     residuals = resid,
     x = x,
     y = y,
-    df = v$dof,
-    intercept = intercept,
-    BIC = nobs * log(mean(resid^2)) + 2 * log(nobs) * sum(v$dof * opt.par)
+    df = as.numeric(v$dof %*% opt_par_mat),
+    cluster_model = list(cluster_object = v$clust, shrinkage_vector = opt_par_mat,
+                         included_levels = v$included_levels),
+    intercept = intercept
   )
 
   class(out) <- "cv.hfr"
