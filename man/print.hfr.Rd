@@ -4,10 +4,12 @@
 \alias{print.hfr}
 \title{Print an HFR object}
 \usage{
-\method{print}{hfr}(object)
+\method{print}{hfr}(x, ...)
 }
 \arguments{
-\item{object}{Fitted 'hfr' model.}
+\item{x}{Fitted 'hfr' model.}
+
+\item{...}{additional methods passed to \code{print}.}
 }
 \value{
 Summary statistics of HFR model
@@ -25,9 +27,6 @@ x = matrix(rnorm(100 * 20), 100, 20)
 y = rnorm(100)
 fit = hfr(x, y, factors = 0.5)
 print(fit)
-
-}
-\references{
 
 }
 \seealso{

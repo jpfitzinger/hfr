@@ -1,12 +1,14 @@
 
-#' @importFrom cluster agnes
-#' @importFrom cluster diana
+#' @importFrom stats hclust
+#' @importFrom stats cor
+#' @importFrom stats quantile
+#' @importFrom stats cutree
 #' @importFrom RcppArmadillo fastLmPure
 
 .get_level_reg <- function(x, y, nvars, nobs, cluster_method, q, intercept) {
 
-  corr <- cor(x)
-  cory <- cor(x, y)
+  corr <- stats::cor(x)
+  cory <- stats::cor(x, y)
 
   rsq <- function(i, j) {
 
@@ -18,17 +20,13 @@
   for (i in 1:nvars) for (j in 1:nvars) if (i != j) partr2[i,j] <- rsq(i, j)
 
   # Create distance matrix
-  distmat <- dist(partr2)
+  distmat <- stats::dist(partr2)
 
-  if (cluster_method == "DIANA") {
-    clust <- diana(distmat)
-  } else {
-    clust <- agnes(distmat, method = cluster_method)
-  }
+  clust <- hclust(distmat, method = cluster_method)
 
   clust$height <- sort(clust$height)
   clust_height_diff <- clust$height - c(clust$height[1], clust$height[-length(clust$height)])
-  select_splits <- which(clust_height_diff>=quantile(clust_height_diff, 1-q))
+  select_splits <- which(clust_height_diff>=stats::quantile(clust_height_diff, 1-q))
   select_splits <- unique(c(1, select_splits, nvars))
 
   all_cuts_unfiltered <- c(nvars:1)
@@ -39,7 +37,7 @@
 
   for (i in 1:length(all_cuts)) {
 
-    cut <- cutree(clust, k = all_cuts[i])
+    cut <- stats::cutree(clust, k = all_cuts[i])
     max_cut <- max(cut)
     cut_fx <- function(row) as.numeric(row == cut)
     S_i <- lapply(1:max_cut, cut_fx)
@@ -69,7 +67,7 @@
     if (intercept) {
 
       x_i <- cbind(1, X_list[[i]])
-      mod <- fastLmPure(x_i, y)
+      mod <- RcppArmadillo::fastLmPure(x_i, y)
       mod_coef <- mod$coefficients
       mod_coef[is.na(mod_coef)] <- 0
       coef_list[[i]] <- c(mod_coef[1], t(S[[i]]) %*% mod_coef[-1])
@@ -78,7 +76,7 @@
     } else {
 
       x_i <- X_list[[i]]
-      mod <- fastLmPure(x_i, y)
+      mod <- RcppArmadillo::fastLmPure(x_i, y)
       mod_coef <- mod$coefficients
       mod_coef[is.na(mod_coef)] <- 0
       coef_list[[i]] <- t(S[[i]]) %*% mod_coef

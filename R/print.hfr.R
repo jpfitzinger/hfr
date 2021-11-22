@@ -6,10 +6,10 @@
 #' data.frame of summary statistics, including the effective degrees of freedom
 #' of the model, the R.squared and the regularization parameter.
 #'
-#' @param object Fitted 'hfr' model.
+#' @param x Fitted 'hfr' model.
+#' @param ... additional methods passed to \code{print}.
 #' @return Summary statistics of HFR model
 #' @author Johann Pfitzinger
-#' @references
 #'
 #' @examples
 #' x = matrix(rnorm(100 * 20), 100, 20)
@@ -23,14 +23,14 @@
 #'
 #' @importFrom stats as.dendrogram
 
-print.hfr <- function(object) {
+print.hfr <- function(x, ...) {
 
-  cat("\nCall: ", deparse(object$call), "\n\n")
-  R2 <- 1 - sum(object$residuals^2) / sum(object$y^2)
+  cat("\nCall: ", deparse(x$call), "\n\n")
+  R2 <- 1 - sum(x$residuals^2) / sum(x$y^2)
 
-  out = data.frame(Df = object$df, R.squared = round(R2, 2), check.names = FALSE)
-  if (!is.null(object$penalty)) out$penalty <- object$penalty
-  if (!is.null(object$factors)) out$factors <- object$factors
+  out = data.frame(Df = x$df, R.squared = round(R2, 2), check.names = FALSE)
+  if (!is.null(x$penalty)) out$penalty <- x$penalty
+  if (!is.null(x$factors)) out$factors <- x$factors
   print(out)
 
 }

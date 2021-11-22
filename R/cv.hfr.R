@@ -20,6 +20,9 @@
 #' @return An 'hfr' regression object.
 #' @author Johann Pfitzinger
 #' @references
+#' Pfitzinger, J. (2021).
+#' Cluster Regularization via a Hierarchical Feature Regression.
+#' _arXiv [statML] 2107.04831_
 #'
 #' @examples
 #' x = matrix(rnorm(100 * 20), 100, 20)
@@ -32,6 +35,7 @@
 #' @seealso \code{hfr}, \code{coef} and \code{predict} methods
 #'
 #' @importFrom quadprog solve.QP
+#' @importFrom stats sd
 
 
 cv.hfr <- function(
@@ -42,7 +46,7 @@ cv.hfr <- function(
   q = NULL,
   intercept = TRUE,
   standardize = TRUE,
-  cluster_method = c("DIANA", "single", "complete", "average", "ward")
+  cluster_method = c("complete", "single", "average", "ward.D2", "mcquitty", "median", "centroid")
 ) {
 
   cluster_method = match.arg(cluster_method)
@@ -94,12 +98,12 @@ cv.hfr <- function(
     q <- min(nvars, sqrt(nobs)) / nvars
   }
 
-  if (any(apply(x, 2, sd)==0))
+  if (any(apply(x, 2, stats::sd)==0))
     stop("Features can not have a standard deviation of zero.")
 
   if (standardize) {
     standard_mean <- apply(x, 2, mean)
-    standard_sd <- apply(x, 2, sd)
+    standard_sd <- apply(x, 2, stats::sd)
     if (intercept) {
       xs <- as.matrix(scale(x, center = standard_mean, scale = standard_sd))
     } else {
@@ -122,13 +126,13 @@ cv.hfr <- function(
 
     if (!is.null(penalty_grid)) {
       penalty_term <- -v$dof * penalty_grid[i] * nobs
-      opt <- solve.QP(Dmat = Dmat,
+      opt <- quadprog::solve.QP(Dmat = Dmat,
                       dvec = dvec + penalty_term,
                       Amat = Amat,
                       bvec = bvec)
     } else {
       dof_constraint <- 1 + factors_grid[i] * (nvars-1-1e-8)
-      opt <- solve.QP(Dmat = Dmat,
+      opt <- quadprog::solve.QP(Dmat = Dmat,
                       dvec = dvec,
                       Amat = cbind(v$dof, Amat),
                       bvec = c(dof_constraint, bvec),

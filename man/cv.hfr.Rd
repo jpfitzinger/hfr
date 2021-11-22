@@ -12,7 +12,8 @@ cv.hfr(
   q = NULL,
   intercept = TRUE,
   standardize = TRUE,
-  cluster_method = c("DIANA", "single", "complete", "average", "ward")
+  cluster_method = c("complete", "single", "average", "ward.D2", "mcquitty", "median",
+    "centroid")
 )
 }
 \arguments{
@@ -54,7 +55,9 @@ coef(fit)
 
 }
 \references{
-
+Pfitzinger, J. (2021).
+Cluster Regularization via a Hierarchical Feature Regression.
+_arXiv [statML] 2107.04831_
 }
 \seealso{
 \code{hfr}, \code{coef} and \code{predict} methods

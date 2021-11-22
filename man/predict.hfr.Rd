@@ -4,12 +4,14 @@
 \alias{predict.hfr}
 \title{Model Predictions}
 \usage{
-\method{predict}{hfr}(object, newdata = NULL, penalty = NULL, factors = NULL)
+\method{predict}{hfr}(object, newdata = NULL, ...)
 }
 \arguments{
 \item{object}{Fitted 'hfr' or 'cv.hfr' model.}
 
 \item{newdata}{Matrix or data.frame of new values for \code{x} at which predictions are to be made.}
+
+\item{...}{additional methods passed to \code{predict}.}
 }
 \value{
 A vector of predicted values.
@@ -25,9 +27,6 @@ x = matrix(rnorm(100 * 20), 100, 20)
 y = rnorm(100)
 fit = hfr(x, y, factors = 0.5)
 predict(fit)
-
-}
-\references{
 
 }
 \seealso{

@@ -11,10 +11,7 @@
 #' If neither \code{penalty} or \code{factors} is set, a linear regression with \code{penalty = 0} is
 #' estimated.
 #'
-#' Hierarchical clustering is performed using the \code{cluster}-package. If
-#' \code{cluster_method == 'DIANA'}, the function \code{cluster::diana} is used
-#' to compute a cluster dendrogram, otherwise the function \code{cluster::agnes(., method = cluster_method)}
-#' is used. Default is single-linkage agglomerative nesting.
+#' Hierarchical clustering is performed using \code{hclust}. Default is complete-linkage agglomerative nesting.
 #'
 #' For high-dimensional problems, the hierarchy becomes very large. Setting \code{q} to a value below 1
 #' reduces the number of levels used in the hierarchy. \code{q} represents a quantile-cutoff of amount of
@@ -31,6 +28,9 @@
 #' @return An 'hfr' regression object.
 #' @author Johann Pfitzinger
 #' @references
+#' Pfitzinger, J. (2021).
+#' Cluster Regularization via a Hierarchical Feature Regression.
+#' _arXiv [statML] 2107.04831_
 #'
 #' @examples
 #' x = matrix(rnorm(100 * 20), 100, 20)
@@ -43,6 +43,7 @@
 #' @seealso \code{cv.hfr}, \code{coef}, \code{plot} and \code{predict} methods
 #'
 #' @importFrom quadprog solve.QP
+#' @importFrom stats sd
 
 
 hfr <- function(
@@ -53,7 +54,7 @@ hfr <- function(
   q = NULL,
   intercept = TRUE,
   standardize = TRUE,
-  cluster_method = c("DIANA", "single", "complete", "average", "ward")
+  cluster_method = c("complete", "single", "average", "ward.D2", "mcquitty", "median", "centroid")
   ) {
 
   cluster_method = match.arg(cluster_method)
@@ -99,12 +100,12 @@ hfr <- function(
     q <- min(nvars, sqrt(nobs)) / nvars
   }
 
-  if (any(apply(x, 2, sd)==0))
+  if (any(apply(x, 2, stats::sd)==0))
     stop("Features can not have a standard deviation of zero.")
 
   if (standardize) {
     standard_mean <- apply(x, 2, mean)
-    standard_sd <- apply(x, 2, sd)
+    standard_sd <- apply(x, 2, stats::sd)
     if (intercept) {
       xs <- as.matrix(scale(x, center = standard_mean, scale = standard_sd))
     } else {
@@ -124,13 +125,13 @@ hfr <- function(
 
   if (!is.null(penalty)) {
     penalty_term <- -v$dof * penalty * nobs
-    opt <- solve.QP(Dmat = Dmat,
+    opt <- quadprog::solve.QP(Dmat = Dmat,
                               dvec = dvec + penalty_term,
                               Amat = Amat,
                               bvec = bvec)
   } else {
     dof_constraint <- 1 + factors * (nvars-1-1e-8)
-    opt <- solve.QP(Dmat = Dmat,
+    opt <- quadprog::solve.QP(Dmat = Dmat,
                               dvec = dvec,
                               Amat = cbind(v$dof, Amat),
                               bvec = c(dof_constraint, bvec),

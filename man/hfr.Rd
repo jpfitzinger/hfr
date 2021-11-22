@@ -12,7 +12,8 @@ hfr(
   q = NULL,
   intercept = TRUE,
   standardize = TRUE,
-  cluster_method = c("DIANA", "single", "complete", "average", "ward")
+  cluster_method = c("complete", "single", "average", "ward.D2", "mcquitty", "median",
+    "centroid")
 )
 }
 \arguments{
@@ -48,10 +49,7 @@ setting the argument \code{factors} to a value between 0 and 1 implements the la
 If neither \code{penalty} or \code{factors} is set, a linear regression with \code{penalty = 0} is
 estimated.
 
-Hierarchical clustering is performed using the \code{cluster}-package. If
-\code{cluster_method == 'DIANA'}, the function \code{cluster::diana} is used
-to compute a cluster dendrogram, otherwise the function \code{cluster::agnes(., method = cluster_method)}
-is used. Default is single-linkage agglomerative nesting.
+Hierarchical clustering is performed using \code{hclust}. Default is complete-linkage agglomerative nesting.
 
 For high-dimensional problems, the hierarchy becomes very large. Setting \code{q} to a value below 1
 reduces the number of levels used in the hierarchy. \code{q} represents a quantile-cutoff of amount of
@@ -65,7 +63,9 @@ coef(fit)
 
 }
 \references{
-
+Pfitzinger, J. (2021).
+Cluster Regularization via a Hierarchical Feature Regression.
+_arXiv [statML] 2107.04831_
 }
 \seealso{
 \code{cv.hfr}, \code{coef}, \code{plot} and \code{predict} methods

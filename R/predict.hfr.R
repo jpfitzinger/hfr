@@ -6,9 +6,9 @@
 #'
 #' @param object Fitted 'hfr' or 'cv.hfr' model.
 #' @param newdata Matrix or data.frame of new values for \code{x} at which predictions are to be made.
+#' @param ... additional methods passed to \code{predict}.
 #' @return A vector of predicted values.
 #' @author Johann Pfitzinger
-#' @references
 #'
 #' @examples
 #' x = matrix(rnorm(100 * 20), 100, 20)
@@ -19,26 +19,28 @@
 #' @export
 #'
 #' @seealso \code{hfr}, \code{cv.hfr} and \code{coef} methods
+#'
+#' @importFrom stats coef
+#' @importFrom stats fitted
 
 predict.hfr <- function(
   object,
   newdata = NULL,
-  penalty = NULL,
-  factors = NULL
+  ...
   ) {
 
   if (!class(object) %in% c('hfr'))
     stop("object must be of class 'hfr'")
 
   if (is.null(newdata))
-    return(fitted(object))
+    return(stats::fitted(object))
 
   if (is.null(nobs <- nrow(newdata)))
     stop("'newdata' must be a matrix")
   if (nobs == 0L)
     stop("0 (non-NA) cases")
   nvars <- ncol(newdata)
-  if (nvars != length(coef(object)) - object$intercept)
+  if (nvars != length(stats::coef(object)) - object$intercept)
     stop("incorrect number of columns in 'newdata'")
 
   if (any(is.na(newdata)))
@@ -48,7 +50,7 @@ predict.hfr <- function(
     newdata <- cbind(1, newdata)
   }
 
-  pred <- as.numeric(newdata %*% coef(object))
+  pred <- as.numeric(newdata %*% stats::coef(object))
 
   return(pred)
 

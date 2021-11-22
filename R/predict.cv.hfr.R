@@ -9,25 +9,29 @@
 #' @param newdata Matrix or data.frame of new values for \code{x} at which predictions are to be made.
 #' @param penalty The optimal penalty used for prediction. Only when \code{object} is of type 'cv.hfr'.
 #' @param factors The optimal factors used for prediction. Only when \code{object} is of type 'cv.hfr'.
+#' @param ... additional methods passed to \code{predict}.
 #' @return A vector of predicted values.
 #' @author Johann Pfitzinger
-#' @references
 #'
 #' @examples
 #' x = matrix(rnorm(100 * 20), 100, 20)
 #' y = rnorm(100)
-#' fit = cv.hfr(x, y, factors_grid = seq(0, 1, by = 0.1)
+#' fit = cv.hfr(x, y, factors_grid = seq(0, 1, by = 0.1))
 #' predict(fit, factors = 0.1)
 #'
 #' @export
 #'
 #' @seealso \code{hfr}, \code{cv.hfr} and \code{coef} methods
+#'
+#' @importFrom stats fitted
+#' @importFrom stats coef
 
 predict.cv.hfr <- function(
   object,
   newdata = NULL,
   penalty = NULL,
-  factors = NULL
+  factors = NULL,
+  ...
 ) {
 
   if (!class(object) %in% c('cv.hfr'))
@@ -50,7 +54,7 @@ predict.cv.hfr <- function(
   }
 
   if (is.null(newdata)) {
-    return(fitted(object)[,return_ix])
+    return(stats::fitted(object)[,return_ix])
   }
 
   if (is.null(nobs <- nrow(newdata)))
@@ -58,7 +62,7 @@ predict.cv.hfr <- function(
   if (nobs == 0L)
     stop("0 (non-NA) cases")
   nvars <- ncol(newdata)
-  if (nvars != nrow(coef(object)) - object$intercept)
+  if (nvars != nrow(stats::coef(object)) - object$intercept)
     stop("incorrect number of columns in 'newdata'")
 
   if (any(is.na(newdata)))
@@ -68,7 +72,7 @@ predict.cv.hfr <- function(
     newdata <- cbind(1, newdata)
   }
 
-  coefs <- coef(object)[, return_ix]
+  coefs <- stats::coef(object)[, return_ix]
   pred <- as.numeric(newdata %*% coefs)
 
   return(pred)

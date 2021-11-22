@@ -4,10 +4,12 @@
 \alias{plot.hfr}
 \title{Plot the dendrogram of an HFR model}
 \usage{
-\method{plot}{hfr}(object)
+\method{plot}{hfr}(x, ...)
 }
 \arguments{
-\item{object}{Fitted 'hfr' model.}
+\item{x}{Fitted 'hfr' model.}
+
+\item{...}{additional methods passed to \code{plot}.}
 }
 \value{
 A plotted dendrogram.
@@ -18,16 +20,16 @@ dendrogram are given by a shrinkage vector, with a maximum (unregularized) heigh
 of \eqn{(p-1)}{(p - 1)}. Stronger shrinkage leads to a shallower hierarchy.
 }
 \details{
-
+The dendrogram is generated using hierarchical clustering and modified
+so that the height differential between any two splits is the shrinkage weight of
+the lower split (ranging between 0 and 1). With no shrinkage, all shrinkage weights
+are equal to 1 and the dendrogam has a height of \eqn{(p-1)}{(p - 1)}.
 }
 \examples{
 x = matrix(rnorm(100 * 20), 100, 20)
 y = rnorm(100)
 fit = hfr(x, y, factors = 0.5)
 plot(fit)
-
-}
-\references{
 
 }
 \seealso{

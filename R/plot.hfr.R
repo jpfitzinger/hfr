@@ -4,12 +4,15 @@
 #' dendrogram are given by a shrinkage vector, with a maximum (unregularized) height
 #' of \eqn{(p-1)}{(p - 1)}. Stronger shrinkage leads to a shallower hierarchy.
 #'
-#' @details
+#' @details The dendrogram is generated using hierarchical clustering and modified
+#' so that the height differential between any two splits is the shrinkage weight of
+#' the lower split (ranging between 0 and 1). With no shrinkage, all shrinkage weights
+#' are equal to 1 and the dendrogam has a height of \eqn{(p-1)}{(p - 1)}.
 #'
-#' @param object Fitted 'hfr' model.
+#' @param x Fitted 'hfr' model.
+#' @param ... additional methods passed to \code{plot}.
 #' @return A plotted dendrogram.
 #' @author Johann Pfitzinger
-#' @references
 #'
 #' @examples
 #' x = matrix(rnorm(100 * 20), 100, 20)
@@ -22,17 +25,19 @@
 #' @seealso \code{hfr}, \code{predict} and \code{coef} methods
 #'
 #' @importFrom stats as.dendrogram
+#' @importFrom graphics plot
 
 plot.hfr <- function(
-  object
+  x,
+  ...
 ) {
 
-  if (class(object)!="hfr")
+  if (class(x)!="hfr")
     stop("object must be of class 'hfr'")
 
-  clust <- object$cluster_model$cluster_object
-  phi <- object$cluster_model$shrinkage_vector
-  included_levels <- object$cluster_model$included_levels
+  clust <- x$cluster_model$cluster_object
+  phi <- x$cluster_model$shrinkage_vector
+  included_levels <- x$cluster_model$included_levels
 
   aggr <- diag(length(phi))
   aggr[lower.tri(aggr)] <- 1
@@ -43,6 +48,6 @@ plot.hfr <- function(
 
   clust$height <- cumsum(rev(heights[-1]))
 
-  plot(as.dendrogram(clust))
+  graphics::plot(as.dendrogram(clust))
 
 }
