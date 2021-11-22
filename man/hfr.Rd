@@ -67,6 +67,9 @@ coef(fit)
 \references{
 
 }
+\seealso{
+\code{cv.hfr}, \code{coef}, \code{plot} and \code{predict} methods
+}
 \author{
 Johann Pfitzinger
 }

@@ -31,7 +31,8 @@
   select_splits <- which(clust_height_diff>=quantile(clust_height_diff, 1-q))
   select_splits <- unique(c(1, select_splits, nvars))
 
-  all_cuts <- c(nvars:1)[select_splits]
+  all_cuts_unfiltered <- c(nvars:1)
+  all_cuts <- all_cuts_unfiltered[select_splits]
   all_cuts <- all_cuts[all_cuts<=nobs-2]
   S <- c()
   X_list <- c()
@@ -41,7 +42,7 @@
     cut <- cutree(clust, k = all_cuts[i])
     max_cut <- max(cut)
     cut_fx <- function(row) as.numeric(row == cut)
-    S_i <- purrr::map(1:max_cut, cut_fx)
+    S_i <- lapply(1:max_cut, cut_fx)
     S_i <- t(sapply(S_i, function(x) x))
 
     for (j in 1:nrow(S_i)) {
@@ -98,7 +99,8 @@
     fit_mat = fit_mat,
     dof = dof,
     S = S,
-    clust = clust
+    clust = clust,
+    included_levels = all_cuts_unfiltered %in% all_cuts
   ))
 
 }

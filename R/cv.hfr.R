@@ -29,6 +29,8 @@
 #'
 #' @export
 #'
+#' @seealso \code{hfr}, \code{coef} and \code{predict} methods
+#'
 #' @importFrom quadprog solve.QP
 
 
@@ -96,16 +98,16 @@ cv.hfr <- function(
     stop("Features can not have a standard deviation of zero.")
 
   if (standardize) {
-    standardize_values <- list(
-      mean = apply(x, 2, mean),
-      sd = apply(x, 2, sd)
-    )
-    x <- as.matrix(scale(x, center = standardize_values$mean, scale = standardize_values$sd))
-  } else {
-    standardize_values = NULL
+    standard_mean <- apply(x, 2, mean)
+    standard_sd <- apply(x, 2, sd)
+    if (intercept) {
+      xs <- as.matrix(scale(x, center = standard_mean, scale = standard_sd))
+    } else {
+      xs <- as.matrix(scale(x, scale = standard_sd, center = FALSE))
+    }
   }
 
-  v = .get_level_reg(x, y, nvars, nobs, cluster_method, q, intercept)
+  v = .get_level_reg(xs, y, nvars, nobs, cluster_method, q, intercept)
 
   Dmat <- crossprod(v$fit_mat) * 2
   diag(Dmat) <- diag(Dmat) + 1e-8
@@ -119,7 +121,7 @@ cv.hfr <- function(
   for (i in 1:grid_size) {
 
     if (!is.null(penalty_grid)) {
-      penalty_term <- -v$dof * penalty_grid[i] * 100
+      penalty_term <- -v$dof * penalty_grid[i] * nobs
       opt <- solve.QP(Dmat = Dmat,
                       dvec = dvec + penalty_term,
                       Amat = Amat,
@@ -137,6 +139,17 @@ cv.hfr <- function(
 
     beta <- rowSums(t(t(v$coef_mat) * opt.par))
     names(beta) <- var_names
+
+    # Rescale beta
+    if (standardize) {
+      if (intercept) {
+        beta[-1] <- beta[-1] / standard_sd
+        beta[1] <- beta[1] - crossprod(beta[-1], standard_mean)
+      } else {
+        beta <- beta / standard_sd
+      }
+    }
+
     beta_mat <- cbind(beta_mat, beta)
 
   }
@@ -148,19 +161,20 @@ cv.hfr <- function(
   }
 
 
-  if (intercept) fitted <- y - cbind(1, x) %*% beta_mat else fitted <- y -  x %*% beta_mat
+  if (intercept) fitted <- cbind(1, x) %*% beta_mat else fitted <- x %*% beta_mat
   resid <- y - fitted
 
   out <- list(
+    call = match.call(),
     coefficients = beta_mat,
     factors_grid = factors_grid,
     penalty_grid = penalty_grid,
     fitted.values = fitted,
     residuals = resid,
-    dof = v$dof,
-    clust = v$clust,
+    x = x,
+    y = y,
+    df = v$dof,
     intercept = intercept,
-    standardize_values = standardize_values,
     BIC = nobs * log(mean(resid^2)) + 2 * log(nobs) * sum(v$dof * opt.par)
   )
 

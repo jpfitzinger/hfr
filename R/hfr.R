@@ -40,6 +40,8 @@
 #'
 #' @export
 #'
+#' @seealso \code{cv.hfr}, \code{coef}, \code{plot} and \code{predict} methods
+#'
 #' @importFrom quadprog solve.QP
 
 
@@ -101,16 +103,16 @@ hfr <- function(
     stop("Features can not have a standard deviation of zero.")
 
   if (standardize) {
-    standardize_values <- list(
-      mean = apply(x, 2, mean),
-      sd = apply(x, 2, sd)
-    )
-    x <- as.matrix(scale(x, center = standardize_values$mean, scale = standardize_values$sd))
-  } else {
-    standardize_values = NULL
+    standard_mean <- apply(x, 2, mean)
+    standard_sd <- apply(x, 2, sd)
+    if (intercept) {
+      xs <- as.matrix(scale(x, center = standard_mean, scale = standard_sd))
+    } else {
+      xs <- as.matrix(scale(x, scale = standard_sd, center = FALSE))
+    }
   }
 
-  v = .get_level_reg(x, y, nvars, nobs, cluster_method, q, intercept)
+  v = .get_level_reg(xs, y, nvars, nobs, cluster_method, q, intercept)
 
   Dmat <- crossprod(v$fit_mat) * 2
   diag(Dmat) <- diag(Dmat) + 1e-8
@@ -121,7 +123,7 @@ hfr <- function(
   bvec <- c(rep(0, length(v$dof)), -rep(1, length(v$dof)))
 
   if (!is.null(penalty)) {
-    penalty_term <- -v$dof * penalty * 100
+    penalty_term <- -v$dof * penalty * nobs
     opt <- solve.QP(Dmat = Dmat,
                               dvec = dvec + penalty_term,
                               Amat = Amat,
@@ -140,17 +142,32 @@ hfr <- function(
   beta <- rowSums(t(t(v$coef_mat) * opt.par))
   names(beta) <- var_names
 
-  if (intercept) fitted <- y - cbind(1, x) %*% beta else fitted <- y -  x %*% beta
-  resid <- y - fitted
+  # Rescale beta
+  if (standardize) {
+    if (intercept) {
+      beta[-1] <- beta[-1] / standard_sd
+      beta[1] <- beta[1] - crossprod(beta[-1], standard_mean)
+    } else {
+      beta <- beta / standard_sd
+    }
+  }
+
+  if (intercept) fitted <- as.numeric(cbind(1, x) %*% beta) else fitted <- as.numeric(x %*% beta)
+  resid <- as.numeric(y - fitted)
 
   out <- list(
+    call = match.call(),
     coefficients = beta,
-    fitted.values = as.numeric(fitted),
+    penalty = penalty,
+    factors = factors,
+    fitted.values = fitted,
     residuals = resid,
-    dof = v$dof,
-    clust = v$clust,
+    x = x,
+    y = y,
+    df = as.numeric(crossprod(v$dof, opt.par)),
+    cluster_model = list(cluster_object = v$clust, shrinkage_vector = opt.par,
+                         included_levels = v$included_levels),
     intercept = intercept,
-    standardize_values = standardize_values,
     BIC = nobs * log(mean(resid^2)) + 2 * log(nobs) * sum(v$dof * opt.par)
   )
 

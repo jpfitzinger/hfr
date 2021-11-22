@@ -30,6 +30,9 @@ predict(fit)
 \references{
 
 }
+\seealso{
+\code{hfr}, \code{cv.hfr} and \code{coef} methods
+}
 \author{
 Johann Pfitzinger
 }

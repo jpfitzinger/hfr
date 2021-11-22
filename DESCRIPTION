@@ -1,7 +1,7 @@
 Package: hfr
 Type: Package
 Title: Estimate Hierarchical Feature Regression models
-Version: 0.3.0
+Version: 0.3.1
 Author: Johann Pfitzinger
 Maintainer: Johann Pfitzinger <johann.pfitzinger@gmail.com>
 Description: More about what it does (maybe more than one line)

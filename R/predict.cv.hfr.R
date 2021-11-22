@@ -20,6 +20,8 @@
 #' predict(fit, factors = 0.1)
 #'
 #' @export
+#'
+#' @seealso \code{hfr}, \code{cv.hfr} and \code{coef} methods
 
 predict.cv.hfr <- function(
   object,
@@ -61,12 +63,6 @@ predict.cv.hfr <- function(
 
   if (any(is.na(newdata)))
     stop("'NA' values in 'newdata'")
-
-  if (!is.null(object$standardize_values)) {
-    newdata <- as.matrix(scale(newdata,
-                               center = object$standardize_values$mean,
-                               scale = object$standardize_values$sd))
-  }
 
   if (object$intercept) {
     newdata <- cbind(1, newdata)

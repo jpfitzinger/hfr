@@ -35,6 +35,9 @@ predict(fit, factors = 0.1)
 \references{
 
 }
+\seealso{
+\code{hfr}, \code{cv.hfr} and \code{coef} methods
+}
 \author{
 Johann Pfitzinger
 }
