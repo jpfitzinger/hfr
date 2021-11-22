@@ -26,7 +26,7 @@
 #' @param factors The target effective degrees of freedom of the regression as a percentage of nvars.
 #' @param q The quantile cut-off (in terms of information contributed) above which to consider levels in the hierarchy.
 #' @param intercept Should intercept be fitted (default=TRUE).
-#' @param standardize Logical flag for x variable standardization prior to fitting the model.
+#' @param standardize Logical flag for x variable standardization prior to fitting the model. The coefficients are always returned on the original scale. Default is \code{standardize=TRUE}.
 #' @param cluster_method hierarchical cluster algorithm used to construct an asset hierarchy.
 #' @return An 'hfr' regression object.
 #' @author Johann Pfitzinger

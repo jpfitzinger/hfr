@@ -28,7 +28,7 @@ hfr(
 
 \item{intercept}{Should intercept be fitted (default=TRUE).}
 
-\item{standardize}{Logical flag for x variable standardization prior to fitting the model.}
+\item{standardize}{Logical flag for x variable standardization prior to fitting the model. The coefficients are always returned on the original scale. Default is \code{standardize=TRUE}.}
 
 \item{cluster_method}{hierarchical cluster algorithm used to construct an asset hierarchy.}
 }
