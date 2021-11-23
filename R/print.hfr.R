@@ -14,7 +14,7 @@
 #' @examples
 #' x = matrix(rnorm(100 * 20), 100, 20)
 #' y = rnorm(100)
-#' fit = hfr(x, y, factors = 0.5)
+#' fit = hfr(x, y, nu = 0.5)
 #' print(fit)
 #'
 #' @export
@@ -29,8 +29,7 @@ print.hfr <- function(x, ...) {
 
   R2 <- 1 - sum(x$residuals^2) / sum(x$y^2)
   out = data.frame(Df = x$df, R.squared = round(R2, 2), check.names = FALSE)
-  if (!is.null(x$penalty)) out$penalty <- x$penalty
-  if (!is.null(x$factors)) out$factors <- x$factors
+  out$nu <- x$nu
 
   print(out)
 

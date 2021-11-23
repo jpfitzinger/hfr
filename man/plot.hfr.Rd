@@ -28,7 +28,7 @@ are equal to 1 and the dendrogam has a height of \eqn{(p-1)}{(p - 1)}.
 \examples{
 x = matrix(rnorm(100 * 20), 100, 20)
 y = rnorm(100)
-fit = hfr(x, y, factors = 0.5)
+fit = hfr(x, y, nu = 0.5)
 plot(fit)
 
 }

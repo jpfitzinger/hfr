@@ -2,18 +2,18 @@
 % Please edit documentation in R/cv.hfr.R
 \name{cv.hfr}
 \alias{cv.hfr}
-\title{Cross validation for a Hierarchical Feature Regression}
+\title{Cross validation for a hierarchical feature regression}
 \usage{
 cv.hfr(
   x,
   y,
-  penalty_grid = NULL,
-  factors_grid = NULL,
+  nu_grid = seq(0, 1, by = 0.1),
   q = NULL,
   intercept = TRUE,
   standardize = TRUE,
-  cluster_method = c("complete", "single", "average", "ward.D2", "mcquitty", "median",
-    "centroid")
+  nfolds = 10,
+  foldid = NULL,
+  ...
 )
 }
 \arguments{
@@ -21,9 +21,7 @@ cv.hfr(
 
 \item{y}{Response variable.}
 
-\item{penalty_grid}{A vector of penalties on the effective degrees of freedom of the regression.}
-
-\item{factors_grid}{A vector of target effective degrees of freedom of the regression.}
+\item{nu_grid}{A vector of target effective degrees of freedom of the regression.}
 
 \item{q}{The quantile cut-off (in terms of information contributed) above which to consider levels in the hierarchy.}
 
@@ -31,26 +29,35 @@ cv.hfr(
 
 \item{standardize}{Logical flag for x variable standardization prior to fitting the model. The coefficients are always returned on the original scale. Default is \code{standardize=TRUE}.}
 
-\item{cluster_method}{hierarchical cluster algorithm used to construct an asset hierarchy.}
+\item{nfolds}{The number of folds for k-fold cross validation (default=10).}
+
+\item{foldid}{n optional vector of values between 1 and nfolds identifying what fold each observation is in. If supplied, nfolds can be missing.}
+
+\item{...}{Additional arguments passed to \code{hclust}.}
 }
 \value{
-An 'hfr' regression object.
+A 'cv.hfr' regression object.
 }
 \description{
-The hierarchical feature regression is fitted by estimating a semi-supervised
-hierarchical graph based on bi-variate partial correlations, decomposing a least
-squares estimate along the estimated hierarchy and shrinking coefficients along the branches of the tree.
+HFR is a regularized regression estimator that decomposes a least squares
+regression along a semi-supervised hierarchical graph, and shrinks coefficients
+along the branches of the tree. The algorithm leads to group shrinkage in the
+regression parameters and a reduction in the effective model degrees of freedom.
 }
 \details{
-This function fits an HFR to a grid of penalty or factor values. The results is a
+This function fits an HFR to a grid of 'nu' hyperparameter values. The result is a
 matrix of coefficients with one column for each hyperparameter. By evaluating all hyperparameters
 in a single function, the speed of the algorithm can be improved substantially (e.g. by estimating
 level-specific regressions only once).
+
+When 'nfolds > 1', a cross validation is performed with shuffled data. Alternatively,
+test slices can be passed to the function using the 'foldid' argument. The result
+of the cross validation is given by 'best_nu' in the output object.
 }
 \examples{
 x = matrix(rnorm(100 * 20), 100, 20)
 y = rnorm(100)
-fit = cv.hfr(x, y, factors_grid = seq(0, 1, by = 0.1))
+fit = cv.hfr(x, y, nu_grid = seq(0, 1, by = 0.1))
 coef(fit)
 
 }

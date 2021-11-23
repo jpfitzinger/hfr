@@ -4,14 +4,12 @@
 \alias{plot.cv.hfr}
 \title{Plot the dendrogram of a cv.hfr object}
 \usage{
-\method{plot}{cv.hfr}(x, penalty = NULL, factors = NULL, ...)
+\method{plot}{cv.hfr}(x, nu = NULL, ...)
 }
 \arguments{
 \item{x}{Fitted 'cv.hfr' model.}
 
-\item{penalty}{The optimal penalty used for plotting.}
-
-\item{factors}{The optimal factors used for plotting.}
+\item{nu}{The optimal factors used for plotting.}
 
 \item{...}{additional methods passed to \code{plot}.}
 }
@@ -32,8 +30,8 @@ are equal to 1 and the dendrogam has a height of \eqn{(p-1)}{(p - 1)}.
 \examples{
 x = matrix(rnorm(100 * 20), 100, 20)
 y = rnorm(100)
-fit = cv.hfr(x, y, factors = seq(0, 1, by = 0.1))
-plot(fit, factors = 0.5)
+fit = cv.hfr(x, y, nu_grid = seq(0, 1, by = 0.1))
+plot(fit, nu = 0.5)
 
 }
 \seealso{

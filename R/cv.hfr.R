@@ -1,23 +1,29 @@
 #' @name cv.hfr
-#' @title Cross validation for a Hierarchical Feature Regression
-#' @description The hierarchical feature regression is fitted by estimating a semi-supervised
-#' hierarchical graph based on bi-variate partial correlations, decomposing a least
-#' squares estimate along the estimated hierarchy and shrinking coefficients along the branches of the tree.
+#' @title Cross validation for a hierarchical feature regression
+#' @description HFR is a regularized regression estimator that decomposes a least squares
+#' regression along a semi-supervised hierarchical graph, and shrinks coefficients
+#' along the branches of the tree. The algorithm leads to group shrinkage in the
+#' regression parameters and a reduction in the effective model degrees of freedom.
 #'
-#' @details This function fits an HFR to a grid of penalty or factor values. The results is a
+#' @details This function fits an HFR to a grid of 'nu' hyperparameter values. The result is a
 #' matrix of coefficients with one column for each hyperparameter. By evaluating all hyperparameters
 #' in a single function, the speed of the algorithm can be improved substantially (e.g. by estimating
 #' level-specific regressions only once).
 #'
+#' When 'nfolds > 1', a cross validation is performed with shuffled data. Alternatively,
+#' test slices can be passed to the function using the 'foldid' argument. The result
+#' of the cross validation is given by 'best_nu' in the output object.
+#'
 #' @param x Input matrix, of dimension \eqn{(N\times p)}{(N x p)}; each row is an observation vector.
 #' @param y Response variable.
-#' @param penalty_grid A vector of penalties on the effective degrees of freedom of the regression.
-#' @param factors_grid A vector of target effective degrees of freedom of the regression.
+#' @param nu_grid A vector of target effective degrees of freedom of the regression.
 #' @param q The quantile cut-off (in terms of information contributed) above which to consider levels in the hierarchy.
 #' @param intercept Should intercept be fitted (default=TRUE).
 #' @param standardize Logical flag for x variable standardization prior to fitting the model. The coefficients are always returned on the original scale. Default is \code{standardize=TRUE}.
-#' @param cluster_method hierarchical cluster algorithm used to construct an asset hierarchy.
-#' @return An 'hfr' regression object.
+#' @param nfolds The number of folds for k-fold cross validation (default=10).
+#' @param foldid n optional vector of values between 1 and nfolds identifying what fold each observation is in. If supplied, nfolds can be missing.
+#' @param ...  Additional arguments passed to \code{hclust}.
+#' @return A 'cv.hfr' regression object.
 #' @author Johann Pfitzinger
 #' @references
 #' Pfitzinger, J. (2021).
@@ -27,7 +33,7 @@
 #' @examples
 #' x = matrix(rnorm(100 * 20), 100, 20)
 #' y = rnorm(100)
-#' fit = cv.hfr(x, y, factors_grid = seq(0, 1, by = 0.1))
+#' fit = cv.hfr(x, y, nu_grid = seq(0, 1, by = 0.1))
 #' coef(fit)
 #'
 #' @export
@@ -41,15 +47,14 @@
 cv.hfr <- function(
   x,
   y,
-  penalty_grid = NULL,
-  factors_grid = NULL,
+  nu_grid = seq(0, 1, by = 0.1),
   q = NULL,
   intercept = TRUE,
   standardize = TRUE,
-  cluster_method = c("complete", "single", "average", "ward.D2", "mcquitty", "median", "centroid")
+  nfolds = 10,
+  foldid = NULL,
+  ...
 ) {
-
-  cluster_method = match.arg(cluster_method)
 
   if (is.null(nobs <- nrow(x)))
     stop("'x' must be a matrix")
@@ -72,28 +77,13 @@ cv.hfr <- function(
   if (any(is.na(y)) || any(is.na(x)))
     stop("'NA' values in 'x' or 'y'")
 
-  if (is.null(penalty_grid) & is.null(factors_grid)) {
-    warning("Both 'penalty_grid' and 'factors_grid' are zero. Setting 'penalty_grid = 0'")
-    penalty_grid <- 0
+  if (any(nu_grid > 1) || any(nu_grid < 0)) {
+    stop("each 'nu' must be between 0 and 1.")
   }
 
-  if (!is.null(penalty_grid)) {
-    if (any(penalty_grid < 0)) {
-      stop("each 'penalty' must be a positive number")
-    }
-  }
-
-  if (!is.null(factors_grid)) {
-    if (any(factors_grid > 1) || any(factors_grid < 0)) {
-      stop("each 'factors' must be between 0 and 1.")
-    }
-  }
-
-  if (!is.null(penalty_grid)) {
-    grid_size <- length(penalty_grid)
-  } else {
-    grid_size <- length(factors_grid)
-  }
+  if (is.null(foldid))
+    foldid = sample(rep(seq(nfolds), length = nobs))
+  else nfolds = max(foldid)
 
   # Get feature names
   var_names <- colnames(x)
@@ -102,6 +92,48 @@ cv.hfr <- function(
 
   if (is.null(q)) {
     q <- min(nvars, sqrt(nobs)) / nvars
+  }
+
+  if (nfolds > 1) {
+    mse <- c()
+    for (i in 1:nfolds) {
+
+      ix <- foldid == i
+      x_pred <- x[ix,,drop=FALSE]
+      y_pred <- y[ix]
+      x_fit <- x[!ix,,drop=FALSE]
+      y_fit <- y[!ix]
+
+      if (any(apply(x_fit, 2, stats::sd)==0))
+        stop("Features can not have a standard deviation of zero.")
+
+      if (standardize) {
+        standard_mean <- apply(x_fit, 2, mean)
+        standard_sd <- apply(x_fit, 2, stats::sd)
+        if (intercept) {
+          xs <- as.matrix(scale(x_fit, center = standard_mean, scale = standard_sd))
+        } else {
+          xs <- as.matrix(scale(x_fit, scale = standard_sd, center = FALSE))
+        }
+      } else {
+        xs = x
+      }
+
+      v = .get_level_reg(xs, y_fit, nvars, nobs, q, intercept, ...)
+      meta_opt <- .get_meta_opt(y_fit, nu_grid, nvars, nobs, var_names, standardize, intercept, standard_sd, standard_mean, v)
+
+      beta_mat <- meta_opt$beta
+      opt_par_mat <- meta_opt$opt_par
+
+      if (intercept) pred <- cbind(1, x_pred) %*% beta_mat else pred <- x_pred %*% beta_mat
+      mse <- rbind(mse, colMeans((y_pred - pred)^2))
+
+    }
+    cv_mse <- colMeans(mse)
+    best_nu <- nu_grid[which.min(cv_mse)]
+  } else {
+    best_nu <- NULL
+    cv_mse <- NULL
   }
 
   if (any(apply(x, 2, stats::sd)==0))
@@ -115,63 +147,15 @@ cv.hfr <- function(
     } else {
       xs <- as.matrix(scale(x, scale = standard_sd, center = FALSE))
     }
-  }
-
-  v = .get_level_reg(xs, y, nvars, nobs, cluster_method, q, intercept)
-
-  Dmat <- crossprod(v$fit_mat) * 2
-  diag(Dmat) <- diag(Dmat) + 1e-8
-  dvec <- 2*t(v$fit_mat) %*% y
-  Amat <- diag(length(v$dof))
-  Amat[upper.tri(Amat)] <- 1
-  Amat <- cbind(Amat, -Amat)
-  bvec <- c(rep(0, length(v$dof)), -rep(1, length(v$dof)))
-
-  beta_mat <- c()
-  opt_par_mat <- c()
-  for (i in 1:grid_size) {
-
-    if (!is.null(penalty_grid)) {
-      penalty_term <- -v$dof * penalty_grid[i] * nobs
-      opt <- quadprog::solve.QP(Dmat = Dmat,
-                      dvec = dvec + penalty_term,
-                      Amat = Amat,
-                      bvec = bvec)
-    } else {
-      dof_constraint <- 1 + factors_grid[i] * (nvars-1-1e-8)
-      opt <- quadprog::solve.QP(Dmat = Dmat,
-                      dvec = dvec,
-                      Amat = cbind(v$dof, Amat),
-                      bvec = c(dof_constraint, bvec),
-                      meq = 1)
-    }
-
-    opt_par <- opt$solution
-
-    beta <- rowSums(t(t(v$coef_mat) * opt_par))
-    names(beta) <- var_names
-
-    # Rescale beta
-    if (standardize) {
-      if (intercept) {
-        beta[-1] <- beta[-1] / standard_sd
-        beta[1] <- beta[1] - crossprod(beta[-1], standard_mean)
-      } else {
-        beta <- beta / standard_sd
-      }
-    }
-
-    beta_mat <- cbind(beta_mat, beta)
-    opt_par_mat <- cbind(opt_par_mat, opt_par)
-
-  }
-
-  if (!is.null(penalty_grid)) {
-    colnames(beta_mat) <- penalty_grid
   } else {
-    colnames(beta_mat) <- factors_grid
+    xs <- x
   }
 
+  v = .get_level_reg(xs, y, nvars, nobs, q, intercept, ...)
+  meta_opt <- .get_meta_opt(y, nu_grid, nvars, nobs, var_names, standardize, intercept, standard_sd, standard_mean, v)
+
+  beta_mat <- meta_opt$beta
+  opt_par_mat <- meta_opt$opt_par
 
   if (intercept) fitted <- cbind(1, x) %*% beta_mat else fitted <- x %*% beta_mat
   resid <- y - fitted
@@ -179,13 +163,14 @@ cv.hfr <- function(
   out <- list(
     call = match.call(),
     coefficients = beta_mat,
-    factors_grid = factors_grid,
-    penalty_grid = penalty_grid,
+    nu_grid = nu_grid,
+    best_nu = best_nu,
+    cv_mse = cv_mse,
     fitted.values = fitted,
     residuals = resid,
     x = x,
     y = y,
-    df = as.numeric(v$dof %*% opt_par_mat),
+    df = round(as.numeric(v$dof %*% opt_par_mat), 4),
     cluster_model = list(cluster_object = v$clust, shrinkage_vector = opt_par_mat,
                          included_levels = v$included_levels),
     intercept = intercept

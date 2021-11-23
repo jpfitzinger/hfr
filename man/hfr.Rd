@@ -2,28 +2,16 @@
 % Please edit documentation in R/hfr.R
 \name{hfr}
 \alias{hfr}
-\title{Fit a Hierarchical Feature Regression}
+\title{Fit a hierarchical feature regression}
 \usage{
-hfr(
-  x,
-  y,
-  penalty = NULL,
-  factors = NULL,
-  q = NULL,
-  intercept = TRUE,
-  standardize = TRUE,
-  cluster_method = c("complete", "single", "average", "ward.D2", "mcquitty", "median",
-    "centroid")
-)
+hfr(x, y, nu = 1, q = NULL, intercept = TRUE, standardize = TRUE, ...)
 }
 \arguments{
 \item{x}{Input matrix, of dimension \eqn{(N\times p)}{(N x p)}; each row is an observation vector.}
 
 \item{y}{Response variable.}
 
-\item{penalty}{A penalty on the effective degrees of freedom of the regression.}
-
-\item{factors}{The target effective degrees of freedom of the regression as a percentage of nvars.}
+\item{nu}{The target effective degrees of freedom of the regression as a percentage of nvars.}
 
 \item{q}{The quantile cut-off (in terms of information contributed) above which to consider levels in the hierarchy.}
 
@@ -31,22 +19,23 @@ hfr(
 
 \item{standardize}{Logical flag for x variable standardization prior to fitting the model. The coefficients are always returned on the original scale. Default is \code{standardize=TRUE}.}
 
-\item{cluster_method}{hierarchical cluster algorithm used to construct an asset hierarchy.}
+\item{...}{Additional arguments passed to \code{hclust}.}
 }
 \value{
 An 'hfr' regression object.
 }
 \description{
-The hierarchical feature regression is fitted by estimating a semi-supervised
-hierarchical graph based on bi-variate partial correlations, decomposing a least
-squares estimate along the estimated hierarchy and shrinking coefficients along the branches of the tree.
+HFR is a regularized regression estimator that decomposes a least squares
+regression along a semi-supervised hierarchical graph, and shrinks coefficients
+along the branches of the tree. The algorithm leads to group shrinkage in the
+regression parameters and a reduction in the effective model degrees of freedom.
 }
 \details{
-Shrinkage can be imposed using two mechanisms: using a penalty on the effective degrees of
-freedom of the regression, or targetting an explicit effective degrees of freedom.
-Setting the argument \code{penalty} to a positive value, implements the former approach, while
-setting the argument \code{factors} to a value between 0 and 1 implements the latter.
-If neither \code{penalty} or \code{factors} is set, a linear regression with \code{penalty = 0} is
+Shrinkage can be imposed by targeting an explicit effective degrees of freedom.
+Setting the argument \code{nu} to a value between 0 and 1 controls the effective degrees of
+freedom of the fitted object as a percentage of \eqn{p}{p}. When \eqn{p > N}{p > N}
+'nu' is a percentage of \eqn{(N - 2)}{(N - 2)}.
+If no \code{nu} is set, a linear regression with \code{nu = 1} is
 estimated.
 
 Hierarchical clustering is performed using \code{hclust}. Default is complete-linkage agglomerative nesting.
@@ -58,7 +47,7 @@ information contributed by the levels. The default (\code{q = 1}) considers all 
 \examples{
 x = matrix(rnorm(100 * 20), 100, 20)
 y = rnorm(100)
-fit = hfr(x, y, factors = 0.5)
+fit = hfr(x, y, nu = 0.5)
 coef(fit)
 
 }

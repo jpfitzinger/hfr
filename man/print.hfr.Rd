@@ -25,7 +25,7 @@ of the model, the R.squared and the regularization parameter.
 \examples{
 x = matrix(rnorm(100 * 20), 100, 20)
 y = rnorm(100)
-fit = hfr(x, y, factors = 0.5)
+fit = hfr(x, y, nu = 0.5)
 print(fit)
 
 }

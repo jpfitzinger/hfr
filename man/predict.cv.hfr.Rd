@@ -4,16 +4,14 @@
 \alias{predict.cv.hfr}
 \title{Model Predictions}
 \usage{
-\method{predict}{cv.hfr}(object, newdata = NULL, penalty = NULL, factors = NULL, ...)
+\method{predict}{cv.hfr}(object, newdata = NULL, nu = NULL, ...)
 }
 \arguments{
 \item{object}{Fitted 'cv.hfr' model.}
 
 \item{newdata}{Matrix or data.frame of new values for \code{x} at which predictions are to be made.}
 
-\item{penalty}{The optimal penalty used for prediction.}
-
-\item{factors}{The optimal factors used for prediction.}
+\item{nu}{The optimal factors used for prediction.}
 
 \item{...}{additional methods passed to \code{predict}.}
 }
@@ -30,8 +28,8 @@ the \code{penalty} or \code{factors} argument.
 \examples{
 x = matrix(rnorm(100 * 20), 100, 20)
 y = rnorm(100)
-fit = cv.hfr(x, y, factors_grid = seq(0, 1, by = 0.1))
-predict(fit, factors = 0.1)
+fit = cv.hfr(x, y, nu_grid = seq(0, 1, by = 0.1))
+predict(fit, nu = 0.1)
 
 }
 \seealso{

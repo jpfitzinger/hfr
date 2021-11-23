@@ -4,8 +4,9 @@
 #' @importFrom stats quantile
 #' @importFrom stats cutree
 #' @importFrom RcppArmadillo fastLmPure
+#' @importFrom quadprog solve.QP
 
-.get_level_reg <- function(x, y, nvars, nobs, cluster_method, q, intercept) {
+.get_level_reg <- function(x, y, nvars, nobs, q, intercept, ...) {
 
   corr <- stats::cor(x)
   cory <- stats::cor(x, y)
@@ -22,16 +23,15 @@
   # Create distance matrix
   distmat <- stats::dist(partr2)
 
-  clust <- hclust(distmat, method = cluster_method)
+  clust <- hclust(distmat, ...)
 
   clust$height <- sort(clust$height)
   clust_height_diff <- clust$height - c(clust$height[1], clust$height[-length(clust$height)])
   select_splits <- which(clust_height_diff>=stats::quantile(clust_height_diff, 1-q))
-  select_splits <- unique(c(1, select_splits, nvars))
 
   all_cuts_unfiltered <- c(nvars:1)
   all_cuts <- all_cuts_unfiltered[select_splits]
-  all_cuts <- all_cuts[all_cuts<=nobs-2]
+  all_cuts <- unique(c(min(nvars, nobs-2), all_cuts, 1))
   S <- c()
   X_list <- c()
 
@@ -100,5 +100,53 @@
     clust = clust,
     included_levels = all_cuts_unfiltered %in% all_cuts
   ))
+
+}
+
+.get_meta_opt <- function(y, nu, nvars, nobs, var_names, standardize, intercept, standard_sd, standard_mean, v) {
+
+  grid_size <- length(nu)
+  Dmat <- crossprod(v$fit_mat) / nobs
+  diag(Dmat) <- diag(Dmat) + 1e-8
+  dvec <- (t(v$fit_mat) %*% y) / nobs
+  Amat <- diag(length(v$dof))
+  # Amat[upper.tri(Amat)] <- 1
+  Amat <- cbind(Amat, -Amat)
+  bvec <- c(rep(0, length(v$dof)), -rep(1, length(v$dof)))
+
+  beta_mat <- c()
+  opt_par_mat <- c()
+  for (i in 1:grid_size) {
+
+    dof_constraint <- 1e-4 + nu[i] * (min(nvars, nobs-2)-1e-4-1e-8)
+    opt <- quadprog::solve.QP(Dmat = Dmat,
+                              dvec = dvec,
+                              Amat = cbind(v$dof, Amat),
+                              bvec = c(dof_constraint, bvec),
+                              meq = 1)
+
+    opt_par <- opt$solution
+
+    beta <- rowSums(t(t(v$coef_mat) * opt_par))
+    names(beta) <- var_names
+
+    # Rescale beta
+    if (standardize) {
+      if (intercept) {
+        beta[-1] <- beta[-1] / standard_sd
+        beta[1] <- beta[1] - crossprod(beta[-1], standard_mean)
+      } else {
+        beta <- beta / standard_sd
+      }
+    }
+
+    beta_mat <- cbind(beta_mat, beta)
+    opt_par_mat <- cbind(opt_par_mat, opt_par)
+
+  }
+
+  colnames(beta_mat) <- nu
+
+  return(list(beta = beta_mat, opt_par = opt_par_mat))
 
 }
