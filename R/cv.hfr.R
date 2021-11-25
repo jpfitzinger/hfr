@@ -171,8 +171,8 @@ cv.hfr <- function(
     x = x,
     y = y,
     df = round(as.numeric(v$dof %*% opt_par_mat), 4),
-    cluster_model = list(cluster_object = v$clust, shrinkage_vector = opt_par_mat,
-                         included_levels = v$included_levels),
+    hgraph = list(cluster_object = v$clust, shrinkage_vector = opt_par_mat,
+                  included_levels = v$included_levels),
     intercept = intercept
   )
 

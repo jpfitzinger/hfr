@@ -21,7 +21,7 @@
   for (i in 1:nvars) for (j in 1:nvars) if (i != j) partr2[i,j] <- rsq(i, j)
 
   # Create distance matrix
-  distmat <- stats::dist(partr2)
+  distmat <- stats::dist(partr2^2)
 
   clust <- hclust(distmat, ...)
 

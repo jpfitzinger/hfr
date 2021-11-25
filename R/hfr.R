@@ -122,8 +122,8 @@ hfr <- function(
     x = x,
     y = y,
     df = round(as.numeric(crossprod(v$dof, opt_par)), 4),
-    cluster_model = list(cluster_object = v$clust, shrinkage_vector = opt_par,
-                         included_levels = v$included_levels),
+    hgraph = list(cluster_object = v$clust, shrinkage_vector = opt_par,
+                  included_levels = v$included_levels),
     intercept = intercept
   )
 
