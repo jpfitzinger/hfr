@@ -27,10 +27,6 @@
 #' @export
 #'
 #' @seealso \code{hfr}, \code{predict} and \code{coef} methods
-#'
-#' @importFrom stats as.dendrogram
-#' @importFrom graphics plot abline par mtext
-#' @importFrom dendextend set
 
 plot.hfr <- function(
   x,
@@ -45,9 +41,6 @@ plot.hfr <- function(
   included_levels <- x$hgraph$included_levels
   coefs <- x$coefficients
   if (x$intercept) coefs <- coefs[-1]
-  coefs_sizes <- abs(coefs)/max(abs(coefs))
-  coefs_sizes <- coefs_sizes * 3
-  coefs_col <- ifelse(sign(coefs)>=0, "forestgreen", "firebrick")
 
   aggr <- diag(length(phi))
   aggr[lower.tri(aggr)] <- 1
@@ -56,21 +49,9 @@ plot.hfr <- function(
   heights <- rep(0, length(included_levels))
   heights[rev(included_levels)] <- theta
 
-  dend_heights <- cumsum(rev(heights[-1]))
-  clust$height <- dend_heights
   var_names <- names(x$coefficients)
   if (x$intercept) var_names <- var_names[-1]
 
-  dend <- stats::as.dendrogram(clust)
-  dend <- dendextend::set(dend, "labels", var_names[clust$order])
-  dend <- dendextend::set(dend, "leaves_pch", 15)
-  dend <- dendextend::set(dend, "leaves_cex", coefs_sizes[clust$order])
-  dend <- dendextend::set(dend, "leaves_col", coefs_col[clust$order])
-
-  plot(x = rep(1, length(dend_heights)), y = dend_heights, type = "n", axes=F, xlab=NA, ylab=NA)
-  for (i in dend_heights[dend_heights > 1e-4]) graphics::abline(h = i, col="lightgrey", lwd=1, lty = "dashed")
-  graphics::par(new=TRUE)
-  graphics::plot(as.dendrogram(dend))
-  graphics::mtext(sprintf("Effective df: %.1f", x$df), side=3, line=1, at=0, col="black", las=1)
+  .draw_dendro(clust, coefs, heights, x$hgraph$explained_variance, var_names, x$df)
 
 }

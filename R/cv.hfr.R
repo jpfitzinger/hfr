@@ -116,7 +116,7 @@ cv.hfr <- function(
           xs <- as.matrix(scale(x_fit, scale = standard_sd, center = FALSE))
         }
       } else {
-        xs = x
+        xs = x_fit
       }
 
       v = .get_level_reg(xs, y_fit, nvars, nobs, q, intercept, ...)
@@ -160,6 +160,9 @@ cv.hfr <- function(
   if (intercept) fitted <- cbind(1, x) %*% beta_mat else fitted <- x %*% beta_mat
   resid <- y - fitted
 
+  TSS <- sum(y^2)
+  explained_variance <- 1 - apply(sweep(v$fit_mat, 1, y), 2, function(f) sum(f^2) / TSS)
+
   out <- list(
     call = match.call(),
     coefficients = beta_mat,
@@ -172,7 +175,8 @@ cv.hfr <- function(
     y = y,
     df = round(as.numeric(v$dof %*% opt_par_mat), 4),
     hgraph = list(cluster_object = v$clust, shrinkage_vector = opt_par_mat,
-                  included_levels = v$included_levels),
+                  included_levels = v$included_levels,
+                  explained_variance = explained_variance),
     intercept = intercept
   )
 

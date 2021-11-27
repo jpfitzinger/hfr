@@ -113,6 +113,9 @@ hfr <- function(
   if (intercept) fitted <- as.numeric(cbind(1, x) %*% beta) else fitted <- as.numeric(x %*% beta)
   resid <- as.numeric(y - fitted)
 
+  TSS <- sum(y^2)
+  explained_variance <- 1 - apply(sweep(v$fit_mat, 1, y), 2, function(f) sum(f^2) / TSS)
+
   out <- list(
     call = match.call(),
     coefficients = beta,
@@ -123,7 +126,8 @@ hfr <- function(
     y = y,
     df = round(as.numeric(crossprod(v$dof, opt_par)), 4),
     hgraph = list(cluster_object = v$clust, shrinkage_vector = opt_par,
-                  included_levels = v$included_levels),
+                  included_levels = v$included_levels,
+                  explained_variance = explained_variance),
     intercept = intercept
   )
 
