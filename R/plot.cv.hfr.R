@@ -15,6 +15,8 @@
 #'
 #' @param x Fitted 'cv.hfr' model.
 #' @param nu The optimal factors used for plotting.
+#' @param show_details print model details on the plot.
+#' @param max_leaf_size maximum size of the leaf nodes (default=3).
 #' @param ... additional methods passed to \code{plot}.
 #' @return A plotted dendrogram.
 #' @author Johann Pfitzinger
@@ -32,6 +34,8 @@
 plot.cv.hfr <- function(
   x,
   nu = NULL,
+  show_details = TRUE,
+  max_leaf_size = 3,
   ...
 ) {
 
@@ -45,9 +49,9 @@ plot.cv.hfr <- function(
   if (!is.null(nu)) {
     if (is.null(x$nu_grid))
       stop("no 'nu_grid' in 'object'")
-    if (!any(nu==x$nu_grid))
+    if (!any(round(nu, 6)==round(x$nu_grid, 6)))
       stop("'nu' must be in 'nu_grid' of the object")
-    return_ix <- which(nu==x$nu_grid)
+    return_ix <- which(round(nu, 6)==round(x$nu_grid, 6))
   }
 
   clust <- x$hgraph$cluster_object
@@ -66,6 +70,18 @@ plot.cv.hfr <- function(
   var_names <- rownames(x$coefficients)
   if (x$intercept) var_names <- var_names[-1]
 
-  .draw_dendro(clust, coefs, heights, x$hgraph$explained_variance, var_names, x$df[return_ix])
+  expl_variance <- rep(NA, length(included_levels))
+  expl_variance[included_levels] <- x$hgraph$explained_variance
+  for (i in length(expl_variance):1) {
+    if (is.na(expl_variance[i])) {
+      if (i==length(expl_variance)) {
+        expl_variance[i] <- 0
+      } else {
+        expl_variance[i] <- expl_variance[i+1]
+      }
+    }
+  }
+
+  .draw_dendro(clust, coefs, heights, expl_variance, var_names, x$df[return_ix], show_details, max_leaf_size)
 
 }

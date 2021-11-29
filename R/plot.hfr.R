@@ -14,6 +14,8 @@
 #' the absolute magnitude.
 #'
 #' @param x Fitted 'hfr' model.
+#' @param show_details print model details on the plot.
+#' @param max_leaf_size maximum size of the leaf nodes (default=3).
 #' @param ... additional methods passed to \code{plot}.
 #' @return A plotted dendrogram.
 #' @author Johann Pfitzinger
@@ -30,6 +32,8 @@
 
 plot.hfr <- function(
   x,
+  show_details = TRUE,
+  max_leaf_size = 3,
   ...
 ) {
 
@@ -52,6 +56,18 @@ plot.hfr <- function(
   var_names <- names(x$coefficients)
   if (x$intercept) var_names <- var_names[-1]
 
-  .draw_dendro(clust, coefs, heights, x$hgraph$explained_variance, var_names, x$df)
+  expl_variance <- rep(NA, length(included_levels))
+  expl_variance[included_levels] <- x$hgraph$explained_variance
+  for (i in length(expl_variance):1) {
+    if (is.na(expl_variance[i])) {
+      if (i==length(expl_variance)) {
+        expl_variance[i] <- 0
+      } else {
+        expl_variance[i] <- expl_variance[i+1]
+      }
+    }
+  }
+
+  .draw_dendro(clust, coefs, heights, expl_variance, var_names, x$df, show_details, max_leaf_size)
 
 }

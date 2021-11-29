@@ -151,10 +151,10 @@
 
 }
 
-.draw_dendro <- function(clust, coefs, heights, explained_variance, var_names, df) {
+.draw_dendro <- function(clust, coefs, heights, explained_variance, var_names, df, details, max_leaf_size) {
 
   coefs_sizes <- abs(coefs)/max(abs(coefs))
-  coefs_sizes <- coefs_sizes * 3
+  coefs_sizes <- coefs_sizes * max_leaf_size
   coefs_col <- ifelse(sign(coefs)>=0, "forestgreen", "firebrick")
 
   n <- length(heights)
@@ -174,13 +174,16 @@
   cols <- round((cols - min(cols)) / (max(cols) - min(cols)) * (length(pal)-1)+1)
 
   top_node <- dendextend::get_nodes_xy(dend)[1,]
-  graphics::plot(x = rep(1, n), y = dend_heights, type = "n", axes=F, xlab=NA, ylab=NA, ylim=c(0, max(dend_heights)))
+  graphics::plot(x = rep(1, n), y = dend_heights, type = "n", axes=F, xlab=NA, ylab=NA, ylim=c(0, max(dend_heights)), xlim=c(1,n*1.03))
   for (i in dend_heights[dend_heights > 1e-4]) graphics::abline(h = i, col="lightgrey", lwd=1, lty = "dashed")
   graphics::par(new=TRUE)
   graphics::plot(stats::as.dendrogram(dend), ylim=c(0, max(dend_heights)))
   graphics::segments(x0 = top_node[1], y0 = top_node[2], y1 = dend_heights[n])
   graphics::points(x = top_node[1], y = dend_heights[n], pch = 15)
-  graphics::mtext(sprintf("Effective df: %.1f", df), side=3, line=1, at=0, col="black", las=1)
-  graphics::rect(n+0.5, c(0, dend_heights[-n]), n+1, dend_heights, col = pal[cols[-1]])
+  graphics::rect(n*1.015, c(0, dend_heights[-n]), n*1.03, dend_heights, col = pal[cols], lwd=0.1)
+
+  if (details) {
+    graphics::mtext(sprintf("Effective df: %.1f", df), side=3, line=1, at=0, col="black", las=1)
+  }
 
 }

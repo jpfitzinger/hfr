@@ -173,10 +173,11 @@ cv.hfr <- function(
     residuals = resid,
     x = x,
     y = y,
-    df = round(as.numeric(v$dof %*% opt_par_mat), 4),
+    df = round(as.numeric(v$dof %*% opt_par_mat), 4) + intercept,
     hgraph = list(cluster_object = v$clust, shrinkage_vector = opt_par_mat,
                   included_levels = v$included_levels,
-                  explained_variance = explained_variance),
+                  explained_variance = explained_variance,
+                  full_level_output = v),
     intercept = intercept
   )
 

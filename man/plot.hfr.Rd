@@ -4,10 +4,14 @@
 \alias{plot.hfr}
 \title{Plot the dendrogram of an HFR model}
 \usage{
-\method{plot}{hfr}(x, ...)
+\method{plot}{hfr}(x, show_details = TRUE, max_leaf_size = 3, ...)
 }
 \arguments{
 \item{x}{Fitted 'hfr' model.}
+
+\item{show_details}{print model details on the plot.}
+
+\item{max_leaf_size}{maximum size of the leaf nodes (default=3).}
 
 \item{...}{additional methods passed to \code{plot}.}
 }

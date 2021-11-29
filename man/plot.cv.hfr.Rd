@@ -4,12 +4,16 @@
 \alias{plot.cv.hfr}
 \title{Plot the dendrogram of a cv.hfr object}
 \usage{
-\method{plot}{cv.hfr}(x, nu = NULL, ...)
+\method{plot}{cv.hfr}(x, nu = NULL, show_details = TRUE, max_leaf_size = 3, ...)
 }
 \arguments{
 \item{x}{Fitted 'cv.hfr' model.}
 
 \item{nu}{The optimal factors used for plotting.}
+
+\item{show_details}{print model details on the plot.}
+
+\item{max_leaf_size}{maximum size of the leaf nodes (default=3).}
 
 \item{...}{additional methods passed to \code{plot}.}
 }
