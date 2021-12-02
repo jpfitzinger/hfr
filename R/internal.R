@@ -21,7 +21,7 @@
   for (i in 1:nvars) for (j in 1:nvars) if (i != j) partr2[i,j] <- rsq(i, j)
 
   # Create distance matrix
-  distmat <- stats::dist(partr2^2)
+  distmat <- stats::dist(partr2)
 
   clust <- hclust(distmat, ...)
 
@@ -39,17 +39,9 @@
 
     cut <- stats::cutree(clust, k = all_cuts[i])
     max_cut <- max(cut)
-    cut_fx <- function(row) as.numeric(row == cut)
+    cut_fx <- function(row) as.numeric(row == cut) * sign(drop(cory))
     S_i <- lapply(1:max_cut, cut_fx)
     S_i <- t(sapply(S_i, function(x) x))
-
-    for (j in 1:nrow(S_i)) {
-
-      if (sum(S_i[j,]==1) == 1) signs <- 1 else signs <- sign(colSums(corr[S_i[j,]==1, S_i[j,]==1]) - 1)
-      signs[signs == 0] <- 1
-      S_i[j,S_i[j,]==1] <- signs
-
-    }
 
     S[[i]] <- S_i
     X_list[[i]] <- x %*% t(S[[i]])
@@ -169,9 +161,9 @@
 
   pal <- RColorBrewer::brewer.pal(9, "Blues")
   pal <- c("#FFFFFF", pal)
-  cols <- explained_variance
-  cols <- pmax(c(cols[-n] - cols[-1], cols[n]), 0) * rev(heights)
-  cols <- round((cols - min(cols)) / (max(cols) - min(cols)) * (length(pal)-1)+1)
+  cols <- rev(explained_variance)
+  cols <- pmax(c(cols[-n] - cols[-1], cols[n]), 0)
+  cols <- round(sqrt((cols - min(cols)) / (max(cols) - min(cols))) * (length(pal)-1)+1)
 
   top_node <- dendextend::get_nodes_xy(dend)[1,]
   graphics::plot(x = rep(1, n), y = dend_heights, type = "n", axes=F, xlab=NA, ylab=NA, ylim=c(0, max(dend_heights)), xlim=c(1,n*1.03))
@@ -183,7 +175,7 @@
   graphics::rect(n*1.015, c(0, dend_heights[-n]), n*1.03, dend_heights, col = pal[cols], lwd=0.1)
 
   if (details) {
-    graphics::mtext(sprintf("Effective df: %.1f", df), side=3, line=1, at=0, col="black", las=1)
+    graphics::mtext(sprintf("Effective df: %.1f; R-squared: %.2f", df, max(explained_variance)), side=3, line=1, at=0, adj=0, col="black", las=1)
   }
 
 }

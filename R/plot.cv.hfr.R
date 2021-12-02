@@ -71,7 +71,7 @@ plot.cv.hfr <- function(
   if (x$intercept) var_names <- var_names[-1]
 
   expl_variance <- rep(NA, length(included_levels))
-  expl_variance[included_levels] <- x$hgraph$explained_variance
+  expl_variance[included_levels] <- x$hgraph$explained_variance[, return_ix]
   for (i in length(expl_variance):1) {
     if (is.na(expl_variance[i])) {
       if (i==length(expl_variance)) {

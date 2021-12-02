@@ -27,7 +27,7 @@ print.hfr <- function(x, ...) {
 
   cat("\nCall: ", deparse(x$call), "\n\n")
 
-  R2 <- 1 - sum(x$residuals^2) / sum(x$y^2)
+  R2 <- 1 - sum(x$residuals^2) / sum((x$y - mean(x$y))^2)
   out = data.frame(Df = x$df, R.squared = round(R2, 2), check.names = FALSE)
   out$nu <- x$nu
 

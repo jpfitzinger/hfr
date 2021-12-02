@@ -31,7 +31,7 @@ print.cv.hfr <- function(x, ...) {
 
   R2 <- c()
   for (i in 1:ncol(x$coefficients)) {
-    R2 <- c(R2, 1 - sum(x$residuals[,i]^2) / sum(x$y^2))
+    R2 <- c(R2, 1 - sum(x$residuals[,i]^2) / sum((x$y - mean(x$y))^2))
   }
   out = data.frame(Df = x$df, R.squared = round(R2, 2), check.names = FALSE)
   out$nu <- x$nu_grid

@@ -113,8 +113,18 @@ hfr <- function(
   if (intercept) fitted <- as.numeric(cbind(1, x) %*% beta) else fitted <- as.numeric(x %*% beta)
   resid <- as.numeric(y - fitted)
 
-  TSS <- sum(y^2)
-  explained_variance <- 1 - apply(sweep(v$fit_mat, 1, y), 2, function(f) sum(f^2) / TSS)
+  nlevels <- dim(v$fit_mat)[2]
+  fit_mat_adj <- v$fit_mat
+  theta <- cumsum(opt_par)
+  for (i in 1:(nlevels-1)) fit_mat_adj[,i] <- fit_mat_adj[,i] - fit_mat_adj[,i+1]
+  explained_variance <- sapply(nlevels:1, function(i) {
+    if (i == nlevels) {
+      fit <- fit_mat_adj[,i:nlevels] * theta[i:nlevels]
+    } else {
+      fit <- fit_mat_adj[,i:nlevels] %*% theta[i:nlevels]
+    }
+    return(1 - sum((fit - y)^2) / sum((y - mean(y))^2))
+  })
 
   out <- list(
     call = match.call(),

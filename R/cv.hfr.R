@@ -160,8 +160,19 @@ cv.hfr <- function(
   if (intercept) fitted <- cbind(1, x) %*% beta_mat else fitted <- x %*% beta_mat
   resid <- y - fitted
 
-  TSS <- sum(y^2)
-  explained_variance <- 1 - apply(sweep(v$fit_mat, 1, y), 2, function(f) sum(f^2) / TSS)
+  nlevels <- dim(v$fit_mat)[2]
+  fit_mat_adj <- v$fit_mat
+  theta_mat <- apply(opt_par_mat, 2, cumsum)
+  for (i in 1:(nlevels-1)) fit_mat_adj[,i] <- fit_mat_adj[,i] - fit_mat_adj[,i+1]
+  explained_variance <- sapply(nlevels:1, function(i) {
+    if (i == nlevels) {
+      fit <- fit_mat_adj[,nlevels] %*% matrix(theta_mat[nlevels,], nrow=1)
+    } else {
+      fit <- fit_mat_adj[,i:nlevels] %*% theta_mat[i:nlevels,]
+    }
+    return(1 - colSums(sweep(fit, 1, y)^2) / sum((y - mean(y))^2))
+  })
+  explained_variance <- t(explained_variance)
 
   out <- list(
     call = match.call(),
