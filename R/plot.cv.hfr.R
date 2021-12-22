@@ -8,13 +8,13 @@
 #' so that the height differential between any two splits is the shrinkage weight of
 #' the lower split (ranging between 0 and 1). With no shrinkage, all shrinkage weights
 #' are equal to 1 and the dendrogam has a height of \eqn{(p-1)}{(p - 1)}. With shrinkage
-#' the dendrogram has a height of \eqn{(nu - )}{(nu - 1)}.
+#' the dendrogram has a height of \eqn{(kappa - )}{(kappa - 1)}.
 #'
 #' The leaf nodes are colored to indicate the coefficient sign, with the size indicating
 #' the absolute magnitude.
 #'
 #' @param x Fitted 'cv.hfr' model.
-#' @param nu The optimal factors used for plotting.
+#' @param kappa The optimal factors used for plotting.
 #' @param show_details print model details on the plot.
 #' @param max_leaf_size maximum size of the leaf nodes (default=3).
 #' @param ... additional methods passed to \code{plot}.
@@ -24,8 +24,8 @@
 #' @examples
 #' x = matrix(rnorm(100 * 20), 100, 20)
 #' y = rnorm(100)
-#' fit = cv.hfr(x, y, nu_grid = seq(0, 1, by = 0.1))
-#' plot(fit, nu = 0.5)
+#' fit = cv.hfr(x, y, kappa_grid = seq(0, 1, by = 0.1))
+#' plot(fit, kappa = 0.5)
 #'
 #' @export
 #'
@@ -33,7 +33,7 @@
 
 plot.cv.hfr <- function(
   x,
-  nu = NULL,
+  kappa = NULL,
   show_details = TRUE,
   max_leaf_size = 3,
   ...
@@ -41,17 +41,17 @@ plot.cv.hfr <- function(
 
   if (!class(x) %in% c('cv.hfr'))
     stop("object must be of class 'cv.hfr'")
-  if (is.null(nu) && is.null(x$best_nu))
-    stop("must provide 'nu'")
-  if (is.null(nu) && !is.null(x$best_nu)) {
-    nu <- x$best_nu
+  if (is.null(kappa) && is.null(x$best_kappa))
+    stop("must provide 'kappa'")
+  if (is.null(kappa) && !is.null(x$best_kappa)) {
+    kappa <- x$best_kappa
   }
-  if (!is.null(nu)) {
-    if (is.null(x$nu_grid))
-      stop("no 'nu_grid' in 'object'")
-    if (!any(round(nu, 6)==round(x$nu_grid, 6)))
-      stop("'nu' must be in 'nu_grid' of the object")
-    return_ix <- which(round(nu, 6)==round(x$nu_grid, 6))
+  if (!is.null(kappa)) {
+    if (is.null(x$kappa_grid))
+      stop("no 'kappa_grid' in 'object'")
+    if (!any(round(kappa, 6)==round(x$kappa_grid, 6)))
+      stop("'kappa' must be in 'kappa_grid' of the object")
+    return_ix <- which(round(kappa, 6)==round(x$kappa_grid, 6))
   }
 
   clust <- x$hgraph$cluster_object

@@ -8,7 +8,7 @@
 #' so that the height differential between any two splits is the shrinkage weight of
 #' the lower split (ranging between 0 and 1). With no shrinkage, all shrinkage weights
 #' are equal to 1 and the dendrogam has a height of \eqn{(p-1)}{(p - 1)}. With shrinkage
-#' the dendrogram has a height of \eqn{(nu - )}{(nu - 1)}.
+#' the dendrogram has a height of \eqn{(kappa - )}{(kappa - 1)}.
 #'
 #' The leaf nodes are colored to indicate the coefficient sign, with the size indicating
 #' the absolute magnitude.
@@ -23,7 +23,7 @@
 #' @examples
 #' x = matrix(rnorm(100 * 20), 100, 20)
 #' y = rnorm(100)
-#' fit = hfr(x, y, nu = 0.5)
+#' fit = hfr(x, y, kappa = 0.5)
 #' plot(fit)
 #'
 #' @export

@@ -4,16 +4,16 @@
 \alias{hfr}
 \title{Fit a hierarchical feature regression}
 \usage{
-hfr(x, y, nu = 1, q = NULL, intercept = TRUE, standardize = TRUE, ...)
+hfr(x, y, kappa = 1, q = NULL, intercept = TRUE, standardize = TRUE, ...)
 }
 \arguments{
-\item{x}{Input matrix, of dimension \eqn{(N\times p)}{(N x p)}; each row is an observation vector.}
+\item{x}{Input matrix or data.frame, of dimension \eqn{(N\times p)}{(N x p)}; each row is an observation vector.}
 
 \item{y}{Response variable.}
 
-\item{nu}{The target effective degrees of freedom of the regression as a percentage of nvars.}
+\item{kappa}{The target effective degrees of freedom of the regression as a percentage of nvars.}
 
-\item{q}{The quantile cut-off (in terms of information contributed) above which to consider levels in the hierarchy.}
+\item{q}{Thinning parameter representing the quantile cut-off (in terms of contributed variance) above which to consider levels in the hierarchy. This can used to reduce the number of levels in high-dimensional problems. Default is not thinning.}
 
 \item{intercept}{Should intercept be fitted (default=TRUE).}
 
@@ -32,13 +32,14 @@ regression parameters and a reduction in the effective model degrees of freedom.
 }
 \details{
 Shrinkage can be imposed by targeting an explicit effective degrees of freedom.
-Setting the argument \code{nu} to a value between 0 and 1 controls the effective degrees of
+Setting the argument \code{kappa} to a value between 0 and 1 controls the effective degrees of
 freedom of the fitted object as a percentage of \eqn{p}{p}. When \eqn{p > N}{p > N}
-'nu' is a percentage of \eqn{(N - 2)}{(N - 2)}.
-If no \code{nu} is set, a linear regression with \code{nu = 1} is
+'kappa' is a percentage of \eqn{(N - 2)}{(N - 2)}.
+If no \code{kappa} is set, a linear regression with \code{kappa = 1} is
 estimated.
 
-Hierarchical clustering is performed using \code{hclust}. Default is complete-linkage agglomerative nesting.
+Hierarchical clustering is performed using \code{hclust}. The default is set to
+ward.D2 clustering but can be overridden by passing a method to '...'.
 
 For high-dimensional problems, the hierarchy becomes very large. Setting \code{q} to a value below 1
 reduces the number of levels used in the hierarchy. \code{q} represents a quantile-cutoff of amount of
@@ -47,7 +48,7 @@ information contributed by the levels. The default (\code{q = 1}) considers all 
 \examples{
 x = matrix(rnorm(100 * 20), 100, 20)
 y = rnorm(100)
-fit = hfr(x, y, nu = 0.5)
+fit = hfr(x, y, kappa = 0.5)
 coef(fit)
 
 }

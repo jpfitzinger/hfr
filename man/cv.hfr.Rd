@@ -7,7 +7,7 @@
 cv.hfr(
   x,
   y,
-  nu_grid = seq(0, 1, by = 0.1),
+  kappa_grid = seq(0, 1, by = 0.1),
   q = NULL,
   intercept = TRUE,
   standardize = TRUE,
@@ -17,13 +17,13 @@ cv.hfr(
 )
 }
 \arguments{
-\item{x}{Input matrix, of dimension \eqn{(N\times p)}{(N x p)}; each row is an observation vector.}
+\item{x}{Input matrix or data.frame, of dimension \eqn{(N\times p)}{(N x p)}; each row is an observation vector.}
 
 \item{y}{Response variable.}
 
-\item{nu_grid}{A vector of target effective degrees of freedom of the regression.}
+\item{kappa_grid}{A vector of target effective degrees of freedom of the regression.}
 
-\item{q}{The quantile cut-off (in terms of information contributed) above which to consider levels in the hierarchy.}
+\item{q}{Thinning parameter representing the quantile cut-off (in terms of contributed variance) above which to consider levels in the hierarchy. This can used to reduce the number of levels in high-dimensional problems. Default is not thinning.}
 
 \item{intercept}{Should intercept be fitted (default=TRUE).}
 
@@ -45,19 +45,19 @@ along the branches of the tree. The algorithm leads to group shrinkage in the
 regression parameters and a reduction in the effective model degrees of freedom.
 }
 \details{
-This function fits an HFR to a grid of 'nu' hyperparameter values. The result is a
+This function fits an HFR to a grid of 'kappa' hyperparameter values. The result is a
 matrix of coefficients with one column for each hyperparameter. By evaluating all hyperparameters
 in a single function, the speed of the algorithm can be improved substantially (e.g. by estimating
 level-specific regressions only once).
 
 When 'nfolds > 1', a cross validation is performed with shuffled data. Alternatively,
 test slices can be passed to the function using the 'foldid' argument. The result
-of the cross validation is given by 'best_nu' in the output object.
+of the cross validation is given by 'best_kappa' in the output object.
 }
 \examples{
 x = matrix(rnorm(100 * 20), 100, 20)
 y = rnorm(100)
-fit = cv.hfr(x, y, nu_grid = seq(0, 1, by = 0.1))
+fit = cv.hfr(x, y, kappa_grid = seq(0, 1, by = 0.1))
 coef(fit)
 
 }

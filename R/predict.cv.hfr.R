@@ -7,7 +7,7 @@
 #'
 #' @param object Fitted 'cv.hfr' model.
 #' @param newdata Matrix or data.frame of new values for \code{x} at which predictions are to be made.
-#' @param nu The optimal factors used for prediction.
+#' @param kappa The optimal factors used for prediction.
 #' @param ... additional methods passed to \code{predict}.
 #' @return A vector of predicted values.
 #' @author Johann Pfitzinger
@@ -15,8 +15,8 @@
 #' @examples
 #' x = matrix(rnorm(100 * 20), 100, 20)
 #' y = rnorm(100)
-#' fit = cv.hfr(x, y, nu_grid = seq(0, 1, by = 0.1))
-#' predict(fit, nu = 0.1)
+#' fit = cv.hfr(x, y, kappa_grid = seq(0, 1, by = 0.1))
+#' predict(fit, kappa = 0.1)
 #'
 #' @export
 #'
@@ -28,23 +28,23 @@
 predict.cv.hfr <- function(
   object,
   newdata = NULL,
-  nu = NULL,
+  kappa = NULL,
   ...
 ) {
 
   if (!class(object) %in% c('cv.hfr'))
     stop("object must be of class 'cv.hfr'")
-  if (is.null(nu) && is.null(object$best_nu))
-    stop("must provide 'nu'")
-  if (is.null(nu) && !is.null(object$best_nu)) {
-    nu <- object$best_nu
+  if (is.null(kappa) && is.null(object$best_kappa))
+    stop("must provide 'kappa'")
+  if (is.null(kappa) && !is.null(object$best_kappa)) {
+    kappa <- object$best_kappa
   }
-  if (!is.null(nu)) {
-    if (is.null(object$nu_grid))
-      stop("no 'nu_grid' in 'object'")
-    if (!any(nu==object$nu_grid))
-      stop("'nu' must be in 'nu_grid' of the object")
-    return_ix <- which(nu==object$nu_grid)
+  if (!is.null(kappa)) {
+    if (is.null(object$kappa_grid))
+      stop("no 'kappa_grid' in 'object'")
+    if (!any(kappa==object$kappa_grid))
+      stop("'kappa' must be in 'kappa_grid' of the object")
+    return_ix <- which(kappa==object$kappa_grid)
   }
 
   if (is.null(newdata)) {

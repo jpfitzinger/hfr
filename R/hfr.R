@@ -6,22 +6,23 @@
 #' regression parameters and a reduction in the effective model degrees of freedom.
 #'
 #' @details Shrinkage can be imposed by targeting an explicit effective degrees of freedom.
-#' Setting the argument \code{nu} to a value between 0 and 1 controls the effective degrees of
+#' Setting the argument \code{kappa} to a value between 0 and 1 controls the effective degrees of
 #' freedom of the fitted object as a percentage of \eqn{p}{p}. When \eqn{p > N}{p > N}
-#' 'nu' is a percentage of \eqn{(N - 2)}{(N - 2)}.
-#' If no \code{nu} is set, a linear regression with \code{nu = 1} is
+#' 'kappa' is a percentage of \eqn{(N - 2)}{(N - 2)}.
+#' If no \code{kappa} is set, a linear regression with \code{kappa = 1} is
 #' estimated.
 #'
-#' Hierarchical clustering is performed using \code{hclust}. Default is complete-linkage agglomerative nesting.
+#' Hierarchical clustering is performed using \code{hclust}. The default is set to
+#' ward.D2 clustering but can be overridden by passing a method to '...'.
 #'
 #' For high-dimensional problems, the hierarchy becomes very large. Setting \code{q} to a value below 1
 #' reduces the number of levels used in the hierarchy. \code{q} represents a quantile-cutoff of amount of
 #' information contributed by the levels. The default (\code{q = 1}) considers all levels.
 #'
-#' @param x Input matrix, of dimension \eqn{(N\times p)}{(N x p)}; each row is an observation vector.
+#' @param x Input matrix or data.frame, of dimension \eqn{(N\times p)}{(N x p)}; each row is an observation vector.
 #' @param y Response variable.
-#' @param nu The target effective degrees of freedom of the regression as a percentage of nvars.
-#' @param q The quantile cut-off (in terms of information contributed) above which to consider levels in the hierarchy.
+#' @param kappa The target effective degrees of freedom of the regression as a percentage of nvars.
+#' @param q Thinning parameter representing the quantile cut-off (in terms of contributed variance) above which to consider levels in the hierarchy. This can used to reduce the number of levels in high-dimensional problems. Default is not thinning.
 #' @param intercept Should intercept be fitted (default=TRUE).
 #' @param standardize Logical flag for x variable standardization prior to fitting the model. The coefficients are always returned on the original scale. Default is \code{standardize=TRUE}.
 #' @param ...  Additional arguments passed to \code{hclust}.
@@ -35,7 +36,7 @@
 #' @examples
 #' x = matrix(rnorm(100 * 20), 100, 20)
 #' y = rnorm(100)
-#' fit = hfr(x, y, nu = 0.5)
+#' fit = hfr(x, y, kappa = 0.5)
 #' coef(fit)
 #'
 #' @export
@@ -48,7 +49,7 @@
 hfr <- function(
   x,
   y,
-  nu = 1,
+  kappa = 1,
   q = NULL,
   intercept = TRUE,
   standardize = TRUE,
@@ -76,8 +77,8 @@ hfr <- function(
   if (any(is.na(y)) || any(is.na(x)))
     stop("'NA' values in 'x' or 'y'")
 
-  if (nu > 1 || nu < 0) {
-    stop("'nu' must be between 0 and 1")
+  if (kappa > 1 || kappa < 0) {
+    stop("'kappa' must be between 0 and 1")
   }
 
   # Get feature names
@@ -85,8 +86,11 @@ hfr <- function(
   if (is.null(var_names)) var_names <- paste("X", 1:ncol(x), sep = ".")
   if (intercept) var_names <- c("intercept", var_names)
 
+  # Convert 'x' to matrix
+  x <- data.matrix(x)
+
   if (is.null(q)) {
-    q <- min(nvars, sqrt(nobs)) / nvars
+    q <- 1
   }
 
   if (any(apply(x, 2, stats::sd)==0))
@@ -105,7 +109,7 @@ hfr <- function(
   }
 
   v = .get_level_reg(xs, y, nvars, nobs, q, intercept, ...)
-  meta_opt <- .get_meta_opt(y, nu, nvars, nobs, var_names, standardize, intercept, standard_sd, standard_mean, v)
+  meta_opt <- .get_meta_opt(y, kappa, nvars, nobs, var_names, standardize, intercept, standard_sd, standard_mean, v)
 
   beta <- drop(meta_opt$beta)
   opt_par <- drop(meta_opt$opt_par)
@@ -129,7 +133,7 @@ hfr <- function(
   out <- list(
     call = match.call(),
     coefficients = beta,
-    nu = nu,
+    kappa = kappa,
     fitted.values = fitted,
     residuals = resid,
     x = x,

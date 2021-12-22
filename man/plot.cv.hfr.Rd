@@ -4,12 +4,12 @@
 \alias{plot.cv.hfr}
 \title{Plot the dendrogram of a cv.hfr object}
 \usage{
-\method{plot}{cv.hfr}(x, nu = NULL, show_details = TRUE, max_leaf_size = 3, ...)
+\method{plot}{cv.hfr}(x, kappa = NULL, show_details = TRUE, max_leaf_size = 3, ...)
 }
 \arguments{
 \item{x}{Fitted 'cv.hfr' model.}
 
-\item{nu}{The optimal factors used for plotting.}
+\item{kappa}{The optimal factors used for plotting.}
 
 \item{show_details}{print model details on the plot.}
 
@@ -30,7 +30,7 @@ The dendrogram is generated using hierarchical clustering and modified
 so that the height differential between any two splits is the shrinkage weight of
 the lower split (ranging between 0 and 1). With no shrinkage, all shrinkage weights
 are equal to 1 and the dendrogam has a height of \eqn{(p-1)}{(p - 1)}. With shrinkage
-the dendrogram has a height of \eqn{(nu - )}{(nu - 1)}.
+the dendrogram has a height of \eqn{(kappa - )}{(kappa - 1)}.
 
 The leaf nodes are colored to indicate the coefficient sign, with the size indicating
 the absolute magnitude.
@@ -38,8 +38,8 @@ the absolute magnitude.
 \examples{
 x = matrix(rnorm(100 * 20), 100, 20)
 y = rnorm(100)
-fit = cv.hfr(x, y, nu_grid = seq(0, 1, by = 0.1))
-plot(fit, nu = 0.5)
+fit = cv.hfr(x, y, kappa_grid = seq(0, 1, by = 0.1))
+plot(fit, kappa = 0.5)
 
 }
 \seealso{
