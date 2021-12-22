@@ -8,22 +8,28 @@
 
 .get_level_reg <- function(x, y, nvars, nobs, q, intercept, ...) {
 
+  # Set default cluster method
+  hclust_args <- match.call(expand.dots = F)$...
+  if (!"method" %in% names(hclust_args)) {
+    hclust_args$method <- "ward.D2"
+  }
+
   corr <- stats::cor(x)
   cory <- stats::cor(x, y)
 
-  rsq <- function(i, j) {
+  partial_r <- function(i, j) {
 
-    rsq <- (cory[i,] - cory[j,] * corr[i,j]) / sqrt((1 - cory[j,]^2) * (1 - corr[i,j]^2))
-    return(rsq)
+    coef <- (cory[i,] - cory[j,] * corr[i,j]) / sqrt((1 - cory[j,]^2) * (1 - corr[i,j]^2))
+    return(coef)
 
   }
-  partr2 <- matrix(NA, nvars, nvars)
-  for (i in 1:nvars) for (j in 1:nvars) if (i != j) partr2[i,j] <- rsq(i, j)
+  partr <- matrix(NA, nvars, nvars)
+  for (i in 1:nvars) for (j in 1:nvars) if (i != j) partr[i,j] <- partial_r(i, j)
 
   # Create distance matrix
-  distmat <- stats::dist(partr2)
+  distmat <- stats::dist(partr)
 
-  clust <- hclust(distmat, ...)
+  clust <- do.call(hclust, append(list(d = distmat), hclust_args))
 
   clust$height <- sort(clust$height)
   clust_height_diff <- clust$height - c(clust$height[1], clust$height[-length(clust$height)])
@@ -95,14 +101,13 @@
 
 }
 
-.get_meta_opt <- function(y, nu, nvars, nobs, var_names, standardize, intercept, standard_sd, standard_mean, v) {
+.get_meta_opt <- function(y, kappa, nvars, nobs, var_names, standardize, intercept, standard_sd, standard_mean, v) {
 
-  grid_size <- length(nu)
+  grid_size <- length(kappa)
   Dmat <- crossprod(v$fit_mat) / nobs
   diag(Dmat) <- diag(Dmat) + 1e-8
   dvec <- (t(v$fit_mat) %*% y) / nobs
   Amat <- diag(length(v$dof))
-  # Amat[upper.tri(Amat)] <- 1
   Amat <- cbind(Amat, -Amat)
   bvec <- c(rep(0, length(v$dof)), -rep(1, length(v$dof)))
 
@@ -110,7 +115,7 @@
   opt_par_mat <- c()
   for (i in 1:grid_size) {
 
-    dof_constraint <- 1e-4 + nu[i] * (min(nvars, nobs-2)-1e-4-1e-8)
+    dof_constraint <- 1e-4 + kappa[i] * (min(nvars, nobs-2)-1e-4-1e-8)
     opt <- quadprog::solve.QP(Dmat = Dmat,
                               dvec = dvec,
                               Amat = cbind(v$dof, Amat),
@@ -137,7 +142,7 @@
 
   }
 
-  colnames(beta_mat) <- nu
+  colnames(beta_mat) <- kappa
 
   return(list(beta = beta_mat, opt_par = opt_par_mat))
 
