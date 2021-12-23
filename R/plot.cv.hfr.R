@@ -67,8 +67,11 @@ plot.cv.hfr <- function(
   aggr[lower.tri(aggr)] <- 1
   theta <- rev(as.numeric(aggr %*% phi))
 
+  dof <- rev(sapply(x$hgraph$full_level_output$S, nrow))
+  dof <- c(dof[1], dof[-1] - dof[-length(dof)])
+
   heights <- rep(0, length(included_levels))
-  heights[rev(included_levels)] <- theta
+  heights[rev(included_levels)] <- theta * dof
 
   var_names <- rownames(x$coefficients)
   if (x$intercept) var_names <- var_names[-1]
