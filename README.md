@@ -1,6 +1,6 @@
 # hfr
 
-`hfr` is an R package that implements the Hierarchical Feature Regression: a regularized regression estimator based on a supervised hierarchical graph. The algorithm identifies predictors with a similar effect on the response variable, and shrinks linear regression parameters towards group targets for these predictors. The strength of shrinkage is governed by a hyperparameter `kappa` that can take on values between 0 and 1 and represents the normalized effective model size. When `kappa = 1` the regression is unregularized resulting in OLS parameters. When `kappa < 1` the model is reduced to an effective model size of $1 + (p-1)\kappa$, where $p$ is the number of covariates.
+`hfr` is an R package that implements the Hierarchical Feature Regression: a regularized regression estimator based on a supervised hierarchical graph. The algorithm identifies predictors with a similar effect on the response variable, and shrinks linear regression parameters towards group targets for these predictors. The strength of shrinkage is governed by a hyperparameter `kappa` that can take on values between 0 and 1 and represents the normalized effective model size. When `kappa = 1` the regression is unregularized resulting in OLS parameters. When `kappa < 1` the model is reduced to an effective model size smaller than the original covariate dimension.
 
 ## Usage
 
@@ -16,7 +16,7 @@ print(fit)
 plot(fit)
 ```
 
-Optimal hyperparameter using $k$-fold cross-validation:
+Optimal hyperparameter using k-fold cross-validation:
 
 ```
 set.seed(123)
