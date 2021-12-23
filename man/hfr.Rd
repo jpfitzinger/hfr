@@ -13,9 +13,9 @@ hfr(x, y, kappa = 1, q = NULL, intercept = TRUE, standardize = TRUE, ...)
 
 \item{kappa}{The target effective degrees of freedom of the regression as a percentage of nvars.}
 
-\item{q}{Thinning parameter representing the quantile cut-off (in terms of contributed variance) above which to consider levels in the hierarchy. This can used to reduce the number of levels in high-dimensional problems. Default is not thinning.}
+\item{q}{Thinning parameter representing the quantile cut-off (in terms of contributed variance) above which to consider levels in the hierarchy. This can used to reduce the number of levels in high-dimensional problems. Default is no thinning.}
 
-\item{intercept}{Should intercept be fitted (default=TRUE).}
+\item{intercept}{Should intercept be fitted. Default is \code{intercept=TRUE}.}
 
 \item{standardize}{Logical flag for x variable standardization prior to fitting the model. The coefficients are always returned on the original scale. Default is \code{standardize=TRUE}.}
 
@@ -26,8 +26,8 @@ An 'hfr' regression object.
 }
 \description{
 HFR is a regularized regression estimator that decomposes a least squares
-regression along a semi-supervised hierarchical graph, and shrinks coefficients
-along the branches of the tree. The algorithm leads to group shrinkage in the
+regression along a supervised hierarchical graph, and shrinks coefficients
+along the branches of the estimated tree. The algorithm leads to group shrinkage in the
 regression parameters and a reduction in the effective model degrees of freedom.
 }
 \details{
@@ -42,8 +42,8 @@ Hierarchical clustering is performed using \code{hclust}. The default is set to
 ward.D2 clustering but can be overridden by passing a method to '...'.
 
 For high-dimensional problems, the hierarchy becomes very large. Setting \code{q} to a value below 1
-reduces the number of levels used in the hierarchy. \code{q} represents a quantile-cutoff of amount of
-information contributed by the levels. The default (\code{q = 1}) considers all levels.
+reduces the number of levels used in the hierarchy. \code{q} represents a quantile-cutoff of the amount of
+variation contributed by the levels. The default (\code{q = 1}) considers all levels.
 }
 \examples{
 x = matrix(rnorm(100 * 20), 100, 20)

@@ -2,9 +2,9 @@
 #' @title Model Predictions
 #' @description Predict values using a fitted Hierarchical Feature Regression
 #'
-#' @details Predictions are made by multiplying the newdata with the estimated coefficients.
+#' @details Predictions are made by multiplying the newdata object with the estimated coefficients.
 #'
-#' @param object Fitted 'hfr' or 'cv.hfr' model.
+#' @param object Fitted 'hfr' model.
 #' @param newdata Matrix or data.frame of new values for \code{x} at which predictions are to be made.
 #' @param ... additional methods passed to \code{predict}.
 #' @return A vector of predicted values.
@@ -45,6 +45,8 @@ predict.hfr <- function(
 
   if (any(is.na(newdata)))
     stop("'NA' values in 'newdata'")
+
+  newdata <- data.matrix(newdata)
 
   if (object$intercept) {
     newdata <- cbind(1, newdata)

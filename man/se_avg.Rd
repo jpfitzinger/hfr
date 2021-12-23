@@ -2,7 +2,7 @@
 % Please edit documentation in R/se_avg.R
 \name{se_avg}
 \alias{se_avg}
-\title{Calculate standard errors for a fitted HFR model}
+\title{Calculate approximate standard errors for a fitted HFR model}
 \usage{
 se_avg(object)
 }
@@ -17,7 +17,7 @@ This function computes the weighted average standard errors across
 levels using Burnham & Anderson (2004).
 }
 \details{
-The HFR estimates linear regressions over several levels of an estimated
+The HFR computes linear regressions over several levels of an estimated
 hierarchy. By averaging the standard errors across hierarchical levels, an
 indication can be obtained about the average significance of the variables.
 

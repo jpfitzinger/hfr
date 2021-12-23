@@ -23,15 +23,15 @@ cv.hfr(
 
 \item{kappa_grid}{A vector of target effective degrees of freedom of the regression.}
 
-\item{q}{Thinning parameter representing the quantile cut-off (in terms of contributed variance) above which to consider levels in the hierarchy. This can used to reduce the number of levels in high-dimensional problems. Default is not thinning.}
+\item{q}{Thinning parameter representing the quantile cut-off (in terms of contributed variance) above which to consider levels in the hierarchy. This can used to reduce the number of levels in high-dimensional problems. Default is no thinning.}
 
-\item{intercept}{Should intercept be fitted (default=TRUE).}
+\item{intercept}{Should intercept be fitted. Default is \code{intercept=TRUE}.}
 
 \item{standardize}{Logical flag for x variable standardization prior to fitting the model. The coefficients are always returned on the original scale. Default is \code{standardize=TRUE}.}
 
 \item{nfolds}{The number of folds for k-fold cross validation (default=10).}
 
-\item{foldid}{n optional vector of values between 1 and nfolds identifying what fold each observation is in. If supplied, nfolds can be missing.}
+\item{foldid}{An optional vector of values between 1 and nfolds identifying what fold each observation is in. If supplied, nfolds can be missing.}
 
 \item{...}{Additional arguments passed to \code{hclust}.}
 }
@@ -40,15 +40,15 @@ A 'cv.hfr' regression object.
 }
 \description{
 HFR is a regularized regression estimator that decomposes a least squares
-regression along a semi-supervised hierarchical graph, and shrinks coefficients
-along the branches of the tree. The algorithm leads to group shrinkage in the
+regression along a supervised hierarchical graph, and shrinks coefficients
+along the branches of the estimated tree. The algorithm leads to group shrinkage in the
 regression parameters and a reduction in the effective model degrees of freedom.
 }
 \details{
 This function fits an HFR to a grid of 'kappa' hyperparameter values. The result is a
 matrix of coefficients with one column for each hyperparameter. By evaluating all hyperparameters
-in a single function, the speed of the algorithm can be improved substantially (e.g. by estimating
-level-specific regressions only once).
+in a single function, the speed of the cross-validation procedure is improved substantially (since
+level-specific regressions are estimated only once).
 
 When 'nfolds > 1', a cross validation is performed with shuffled data. Alternatively,
 test slices can be passed to the function using the 'foldid' argument. The result

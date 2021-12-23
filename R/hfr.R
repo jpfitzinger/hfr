@@ -1,8 +1,8 @@
 #' @name hfr
 #' @title Fit a hierarchical feature regression
 #' @description HFR is a regularized regression estimator that decomposes a least squares
-#' regression along a semi-supervised hierarchical graph, and shrinks coefficients
-#' along the branches of the tree. The algorithm leads to group shrinkage in the
+#' regression along a supervised hierarchical graph, and shrinks coefficients
+#' along the branches of the estimated tree. The algorithm leads to group shrinkage in the
 #' regression parameters and a reduction in the effective model degrees of freedom.
 #'
 #' @details Shrinkage can be imposed by targeting an explicit effective degrees of freedom.
@@ -16,14 +16,14 @@
 #' ward.D2 clustering but can be overridden by passing a method to '...'.
 #'
 #' For high-dimensional problems, the hierarchy becomes very large. Setting \code{q} to a value below 1
-#' reduces the number of levels used in the hierarchy. \code{q} represents a quantile-cutoff of amount of
-#' information contributed by the levels. The default (\code{q = 1}) considers all levels.
+#' reduces the number of levels used in the hierarchy. \code{q} represents a quantile-cutoff of the amount of
+#' variation contributed by the levels. The default (\code{q = 1}) considers all levels.
 #'
 #' @param x Input matrix or data.frame, of dimension \eqn{(N\times p)}{(N x p)}; each row is an observation vector.
 #' @param y Response variable.
 #' @param kappa The target effective degrees of freedom of the regression as a percentage of nvars.
-#' @param q Thinning parameter representing the quantile cut-off (in terms of contributed variance) above which to consider levels in the hierarchy. This can used to reduce the number of levels in high-dimensional problems. Default is not thinning.
-#' @param intercept Should intercept be fitted (default=TRUE).
+#' @param q Thinning parameter representing the quantile cut-off (in terms of contributed variance) above which to consider levels in the hierarchy. This can used to reduce the number of levels in high-dimensional problems. Default is no thinning.
+#' @param intercept Should intercept be fitted. Default is \code{intercept=TRUE}.
 #' @param standardize Logical flag for x variable standardization prior to fitting the model. The coefficients are always returned on the original scale. Default is \code{standardize=TRUE}.
 #' @param ...  Additional arguments passed to \code{hclust}.
 #' @return An 'hfr' regression object.

@@ -62,6 +62,8 @@ predict.cv.hfr <- function(
   if (any(is.na(newdata)))
     stop("'NA' values in 'newdata'")
 
+  newdata <- data.matrix(newdata)
+
   if (object$intercept) {
     newdata <- cbind(1, newdata)
   }

@@ -7,7 +7,7 @@
 \method{predict}{hfr}(object, newdata = NULL, ...)
 }
 \arguments{
-\item{object}{Fitted 'hfr' or 'cv.hfr' model.}
+\item{object}{Fitted 'hfr' model.}
 
 \item{newdata}{Matrix or data.frame of new values for \code{x} at which predictions are to be made.}
 
@@ -20,7 +20,7 @@ A vector of predicted values.
 Predict values using a fitted Hierarchical Feature Regression
 }
 \details{
-Predictions are made by multiplying the newdata with the estimated coefficients.
+Predictions are made by multiplying the newdata object with the estimated coefficients.
 }
 \examples{
 x = matrix(rnorm(100 * 20), 100, 20)

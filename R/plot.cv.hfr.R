@@ -7,14 +7,17 @@
 #' @details The dendrogram is generated using hierarchical clustering and modified
 #' so that the height differential between any two splits is the shrinkage weight of
 #' the lower split (ranging between 0 and 1). With no shrinkage, all shrinkage weights
-#' are equal to 1 and the dendrogam has a height of \eqn{(p-1)}{(p - 1)}. With shrinkage
+#' are equal to 1 and the dendrogram has a height of \eqn{(p-1)}{(p - 1)}. With shrinkage
 #' the dendrogram has a height of \eqn{(kappa - )}{(kappa - 1)}.
 #'
 #' The leaf nodes are colored to indicate the coefficient sign, with the size indicating
 #' the absolute magnitude.
 #'
+#' A color bar on the right indicates the relative contribution of each level to the
+#' coefficient of determination, with darker hues representing a larger contribution.
+#'
 #' @param x Fitted 'cv.hfr' model.
-#' @param kappa The optimal factors used for plotting.
+#' @param kappa The hyperparameter used for plotting. If empty, the optimal value is used.
 #' @param show_details print model details on the plot.
 #' @param max_leaf_size maximum size of the leaf nodes (default=3).
 #' @param ... additional methods passed to \code{plot}.

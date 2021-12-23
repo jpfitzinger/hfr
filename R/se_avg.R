@@ -1,9 +1,9 @@
 #' @name se_avg
-#' @title Calculate standard errors for a fitted HFR model
+#' @title Calculate approximate standard errors for a fitted HFR model
 #' @description This function computes the weighted average standard errors across
 #' levels using Burnham & Anderson (2004).
 #'
-#' @details The HFR estimates linear regressions over several levels of an estimated
+#' @details The HFR computes linear regressions over several levels of an estimated
 #' hierarchy. By averaging the standard errors across hierarchical levels, an
 #' indication can be obtained about the average significance of the variables.
 #'
