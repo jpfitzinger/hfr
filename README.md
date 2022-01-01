@@ -1,6 +1,6 @@
 # hfr
 
-`hfr` is an R package that implements the Hierarchical Feature Regression: a regularized regression estimator based on a supervised hierarchical graph. The algorithm identifies predictors with a similar effect on the response variable, and shrinks linear regression parameters towards group targets for these predictors. The strength of shrinkage is governed by a hyperparameter `kappa` that can take on values between 0 and 1 and represents the normalized effective model size. When `kappa = 1` the regression is unregularized resulting in OLS parameters. When `kappa < 1` the model is reduced to an effective model size smaller than the original covariate dimension.
+`hfr` is an R package that implements a novel cluster-based regularized regression estimator --- the **Hierarchical Feature Regression (HFR)** ---, which mobilizes insights from the domains of machine learning and graph theory to estimate robust parameters for a linear regression. The estimator constructs a supervised feature graph that decomposes parameters along its edges, adjusting first for common variation and successively incorporating idiosyncratic patterns into the fitting process. The graph structure has the effect of shrinking parameters towards group targets, where the extent of shrinkage is governed by a hyperparamter, and group compositions as well as shrinkage targets are determined endogenously. The hyperparameter `kappa` can take on values between 0 and 1 and represents the normalized effective model size. When `kappa = 1` the regression is unregularized resulting in OLS parameters. When `kappa < 1` the model is reduced to an effective model size smaller than the original covariate dimension.
 
 ## Usage
 
@@ -13,6 +13,11 @@ x <- mtcars[, -1]
 y <- mtcars[, 1]
 fit <- hfr(x, y, kappa = 0.75)
 print(fit)
+```
+
+The HFR offers rich resources for the visual exploration of the underlying effect structure in the data. The package includes a custom dendrogram visualizing the optimal regression graph. See `?plot.hfr` for details:
+
+```
 plot(fit)
 ```
 

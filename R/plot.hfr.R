@@ -1,17 +1,18 @@
 #' @name plot.hfr
 #' @title Plot the dendrogram of an HFR model
 #' @description Plots the dendrogram of a fitted \code{hfr} model. The heights of the
-#' dendrogram are given by a shrinkage vector, with a maximum (unregularized) height
-#' of \eqn{(p-1)}{(p - 1)}. Stronger shrinkage leads to a shallower hierarchy.
+#' levels in the dendrogram are given by a shrinkage vector, with a maximum (unregularized)
+#' overall graph height of \eqn{p}{p} (the number of covariates in the regression).
+#' Stronger shrinkage leads to a shallower hierarchy.
 #'
 #' @details The dendrogram is generated using hierarchical clustering and modified
 #' so that the height differential between any two splits is the shrinkage weight of
 #' the lower split (ranging between 0 and 1). With no shrinkage, all shrinkage weights
-#' are equal to 1 and the dendrogram has a height of \eqn{(p-1)}{(p - 1)}. With shrinkage
-#' the dendrogram has a height of \eqn{(kappa - )}{(kappa - 1)}.
+#' are equal to 1 and the dendrogram has a height of \eqn{p}{p}. With shrinkage
+#' the dendrogram has a height of \eqn{(kappa \times p)}{(kappa x p)}.
 #'
 #' The leaf nodes are colored to indicate the coefficient sign, with the size indicating
-#' the absolute magnitude.
+#' the absolute magnitude of the coefficients.
 #'
 #' A color bar on the right indicates the relative contribution of each level to the
 #' coefficient of determination, with darker hues representing a larger contribution.

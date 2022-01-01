@@ -8,4 +8,4 @@ Description: Provides functions for the estimation, plotting, predicting and cro
 License: GPL-2
 Imports: RcppArmadillo, quadprog, stats, dendextend, RColorBrewer
 Encoding: UTF-8
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
