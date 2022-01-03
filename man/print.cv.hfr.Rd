@@ -2,12 +2,12 @@
 % Please edit documentation in R/print.cv.hfr.R
 \name{print.cv.hfr}
 \alias{print.cv.hfr}
-\title{Print a cv.hfr object}
+\title{Print an HFR model}
 \usage{
 \method{print}{cv.hfr}(x, ...)
 }
 \arguments{
-\item{x}{Fitted 'cv.hfr' model.}
+\item{x}{Fitted \code{cv.hfr} model.}
 
 \item{...}{additional methods passed to \code{print}.}
 }
@@ -15,11 +15,11 @@
 Summary statistics of HFR model
 }
 \description{
-Print summary statistics for a fitted cv.hfr model
+Print summary statistics for a fitted \code{cv.hfr} model
 }
 \details{
 The call that produced the object \code{x} is printed, following by a
-data.frame of summary statistics, including the effective degrees of freedom
+\code{data.frame} of summary statistics, including the effective degrees of freedom
 of the model, the R.squared and the regularization parameter.
 }
 \examples{

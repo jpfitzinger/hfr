@@ -1,13 +1,14 @@
 #' @name predict.cv.hfr
-#' @title Model Predictions
-#' @description Predict values using a fitted Hierarchical Feature Regression cross-validation object
+#' @title Model predictions
+#' @description Predict values using a fitted \code{cv.hfr} model
 #'
-#' @details The chosen hyperparameter value to use for predictions can be passed to
-#' the \code{penalty} or \code{factors} argument.
+#' @details Predictions are made by multiplying the \code{newdata} object with the estimated coefficients.
+#' The chosen hyperparameter value to use for predictions can be passed to
+#' the \code{kappa} argument.
 #'
 #' @param object Fitted 'cv.hfr' model.
 #' @param newdata Matrix or data.frame of new values for \code{x} at which predictions are to be made.
-#' @param kappa The optimal factors used for prediction.
+#' @param kappa The hyperparameter used for prediction. If empty, the optimal value is used.
 #' @param ... additional methods passed to \code{predict}.
 #' @return A vector of predicted values.
 #' @author Johann Pfitzinger

@@ -27,11 +27,11 @@ cv.hfr(
 
 \item{intercept}{Should intercept be fitted. Default is \code{intercept=TRUE}.}
 
-\item{standardize}{Logical flag for x variable standardization prior to fitting the model. The coefficients are always returned on the original scale. Default is \code{standardize=TRUE}.}
+\item{standardize}{Logical flag for \code{x} variable standardization prior to fitting the model. The coefficients are always returned on the original scale. Default is \code{standardize=TRUE}.}
 
-\item{nfolds}{The number of folds for k-fold cross validation (default=10).}
+\item{nfolds}{The number of folds for k-fold cross validation. Default is \code{nfolds=10}.}
 
-\item{foldid}{An optional vector of values between 1 and nfolds identifying what fold each observation is in. If supplied, nfolds can be missing.}
+\item{foldid}{An optional vector of values between \code{1} and \code{nfolds} identifying what fold each observation is in. If supplied, \code{nfolds} can be missing.}
 
 \item{...}{Additional arguments passed to \code{hclust}.}
 }
@@ -40,19 +40,19 @@ A 'cv.hfr' regression object.
 }
 \description{
 HFR is a regularized regression estimator that decomposes a least squares
-regression along a supervised hierarchical graph, and shrinks coefficients
-along the branches of the estimated tree. The algorithm leads to group shrinkage in the
+regression along a supervised hierarchical graph, and shrinks the edges of the
+estimated graph to regularize parameters. The algorithm leads to group shrinkage in the
 regression parameters and a reduction in the effective model degrees of freedom.
 }
 \details{
-This function fits an HFR to a grid of 'kappa' hyperparameter values. The result is a
+This function fits an HFR to a grid of \code{kappa} hyperparameter values. The result is a
 matrix of coefficients with one column for each hyperparameter. By evaluating all hyperparameters
 in a single function, the speed of the cross-validation procedure is improved substantially (since
 level-specific regressions are estimated only once).
 
-When 'nfolds > 1', a cross validation is performed with shuffled data. Alternatively,
-test slices can be passed to the function using the 'foldid' argument. The result
-of the cross validation is given by 'best_kappa' in the output object.
+When \code{nfolds > 1}, a cross validation is performed with shuffled data. Alternatively,
+test slices can be passed to the function using the \code{foldid} argument. The result
+of the cross validation is given by \code{best_kappa} in the output object.
 }
 \examples{
 x = matrix(rnorm(100 * 20), 100, 20)

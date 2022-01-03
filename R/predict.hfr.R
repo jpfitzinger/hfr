@@ -1,8 +1,8 @@
 #' @name predict.hfr
-#' @title Model Predictions
-#' @description Predict values using a fitted Hierarchical Feature Regression
+#' @title Model predictions
+#' @description Predict values using a fitted \code{hfr} model
 #'
-#' @details Predictions are made by multiplying the newdata object with the estimated coefficients.
+#' @details Predictions are made by multiplying the \code{newdata} object with the estimated coefficients.
 #'
 #' @param object Fitted 'hfr' model.
 #' @param newdata Matrix or data.frame of new values for \code{x} at which predictions are to be made.

@@ -34,7 +34,7 @@ The package provides functionality of the estimation of approximate standard err
 
 ```
 fit <- hfr(x, y, kappa = cv.fit$best_kappa)
-se_avg(fit)
+se.avg(fit)
 ```
 
 Finally, standard functions such as `coef`, `predict` and `print` can be used to interact with fitted `hfr` or `cv.hfr` objects.

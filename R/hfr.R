@@ -1,27 +1,27 @@
 #' @name hfr
 #' @title Fit a hierarchical feature regression
 #' @description HFR is a regularized regression estimator that decomposes a least squares
-#' regression along a supervised hierarchical graph, and shrinks coefficients
-#' along the branches of the estimated tree. The algorithm leads to group shrinkage in the
+#' regression along a supervised hierarchical graph, and shrinks the edges of the
+#' estimated graph to regularize parameters. The algorithm leads to group shrinkage in the
 #' regression parameters and a reduction in the effective model degrees of freedom.
 #'
 #' @details Shrinkage can be imposed by targeting an explicit effective degrees of freedom.
-#' Setting the argument \code{kappa} to a value between 0 and 1 controls the effective degrees of
-#' freedom of the fitted object as a percentage of \eqn{p}{p}. When \eqn{p > N}{p > N}
-#' 'kappa' is a percentage of \eqn{(N - 2)}{(N - 2)}.
+#' Setting the argument \code{kappa} to a value between \code{0} and \code{1} controls
+#' the effective degrees of freedom of the fitted object as a percentage of \eqn{p}{p}.
+#' When \eqn{p > N}{p > N} \code{kappa} is a percentage of \eqn{(N - 2)}{(N - 2)}.
 #' If no \code{kappa} is set, a linear regression with \code{kappa = 1} is
 #' estimated.
 #'
 #' Hierarchical clustering is performed using \code{hclust}. The default is set to
-#' ward.D2 clustering but can be overridden by passing a method to '...'.
+#' ward.D2 clustering but can be overridden by passing a method argument to \code{...}.
 #'
 #' For high-dimensional problems, the hierarchy becomes very large. Setting \code{q} to a value below 1
 #' reduces the number of levels used in the hierarchy. \code{q} represents a quantile-cutoff of the amount of
-#' variation contributed by the levels. The default (\code{q = 1}) considers all levels.
+#' variation contributed by the levels. The default (\code{q = NULL}) considers all levels.
 #'
 #' @param x Input matrix or data.frame, of dimension \eqn{(N\times p)}{(N x p)}; each row is an observation vector.
 #' @param y Response variable.
-#' @param kappa The target effective degrees of freedom of the regression as a percentage of nvars.
+#' @param kappa The target effective degrees of freedom of the regression as a percentage of \eqn{p}{p}.
 #' @param q Thinning parameter representing the quantile cut-off (in terms of contributed variance) above which to consider levels in the hierarchy. This can used to reduce the number of levels in high-dimensional problems. Default is no thinning.
 #' @param intercept Should intercept be fitted. Default is \code{intercept=TRUE}.
 #' @param standardize Logical flag for x variable standardization prior to fitting the model. The coefficients are always returned on the original scale. Default is \code{standardize=TRUE}.

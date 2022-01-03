@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot.cv.hfr.R
 \name{plot.cv.hfr}
 \alias{plot.cv.hfr}
-\title{Plot the dendrogram of a cv.hfr object}
+\title{Plot the dendrogram of an HFR model}
 \usage{
 \method{plot}{cv.hfr}(x, kappa = NULL, show_details = TRUE, max_leaf_size = 3, ...)
 }
@@ -13,7 +13,7 @@
 
 \item{show_details}{print model details on the plot.}
 
-\item{max_leaf_size}{maximum size of the leaf nodes (default=3).}
+\item{max_leaf_size}{maximum size of the leaf nodes. Default is \code{max_leaf_size=3}.}
 
 \item{...}{additional methods passed to \code{plot}.}
 }
@@ -29,9 +29,9 @@ Stronger shrinkage leads to a shallower hierarchy.
 \details{
 The dendrogram is generated using hierarchical clustering and modified
 so that the height differential between any two splits is the shrinkage weight of
-the lower split (ranging between 0 and 1). With no shrinkage, all shrinkage weights
-are equal to 1 and the dendrogram has a height of \eqn{p}{p}. With shrinkage
-the dendrogram has a height of \eqn{(kappa \times p)}{(kappa x p)}.
+the lower split (ranging between \code{0} and \code{1}). With no shrinkage, all shrinkage weights
+are equal to \code{1} and the dendrogram has a height of \eqn{p}{p}. With shrinkage
+the dendrogram has a height of \eqn{(\kappa \times p)}{(\code{kappa} x p)}.
 
 The leaf nodes are colored to indicate the coefficient sign, with the size indicating
 the absolute magnitude of the coefficients.

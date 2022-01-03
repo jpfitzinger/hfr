@@ -1,12 +1,12 @@
 #' @name print.hfr
-#' @title Print an HFR object
-#' @description Print summary statistics for a fitted HFR model
+#' @title Print an HFR model
+#' @description Print summary statistics for a fitted \code{hfr} model
 #'
 #' @details The call that produced the object \code{x} is printed, following by a
-#' data.frame of summary statistics, including the effective degrees of freedom
+#' \code{data.frame} of summary statistics, including the effective degrees of freedom
 #' of the model, the R.squared and the regularization parameter.
 #'
-#' @param x Fitted 'hfr' model.
+#' @param x Fitted \code{hfr} model.
 #' @param ... additional methods passed to \code{print}.
 #' @return Summary statistics of HFR model
 #' @author Johann Pfitzinger

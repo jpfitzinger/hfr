@@ -1,4 +1,4 @@
-#' @name se_avg
+#' @name se.avg
 #' @title Calculate approximate standard errors for a fitted HFR model
 #' @description This function computes the weighted average standard errors across
 #' levels using Burnham & Anderson (2004).
@@ -10,7 +10,7 @@
 #' Standard errors are understated, since the uncertainty in the hierarchy estimation
 #' is not reflected.
 #'
-#' @param object Fitted 'hfr' model.
+#' @param object Fitted \code{hfr} model.
 #' @return A vector of standard errors.
 #' @author Johann Pfitzinger
 #' @references
@@ -26,7 +26,7 @@
 #' x = matrix(rnorm(100 * 20), 100, 20)
 #' y = rnorm(100)
 #' fit = hfr(x, y, kappa = 0.5)
-#' se_avg(fit)
+#' se.avg(fit)
 #'
 #' @export
 #'
@@ -35,7 +35,7 @@
 #' @importFrom stats sd
 
 
-se_avg <- function(
+se.avg <- function(
   object
 ) {
 

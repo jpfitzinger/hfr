@@ -2,7 +2,7 @@
 % Please edit documentation in R/predict.cv.hfr.R
 \name{predict.cv.hfr}
 \alias{predict.cv.hfr}
-\title{Model Predictions}
+\title{Model predictions}
 \usage{
 \method{predict}{cv.hfr}(object, newdata = NULL, kappa = NULL, ...)
 }
@@ -11,7 +11,7 @@
 
 \item{newdata}{Matrix or data.frame of new values for \code{x} at which predictions are to be made.}
 
-\item{kappa}{The optimal factors used for prediction.}
+\item{kappa}{The hyperparameter used for prediction. If empty, the optimal value is used.}
 
 \item{...}{additional methods passed to \code{predict}.}
 }
@@ -19,11 +19,12 @@
 A vector of predicted values.
 }
 \description{
-Predict values using a fitted Hierarchical Feature Regression cross-validation object
+Predict values using a fitted \code{cv.hfr} model
 }
 \details{
+Predictions are made by multiplying the \code{newdata} object with the estimated coefficients.
 The chosen hyperparameter value to use for predictions can be passed to
-the \code{penalty} or \code{factors} argument.
+the \code{kappa} argument.
 }
 \examples{
 x = matrix(rnorm(100 * 20), 100, 20)

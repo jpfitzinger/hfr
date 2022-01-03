@@ -2,12 +2,12 @@
 % Please edit documentation in R/print.hfr.R
 \name{print.hfr}
 \alias{print.hfr}
-\title{Print an HFR object}
+\title{Print an HFR model}
 \usage{
 \method{print}{hfr}(x, ...)
 }
 \arguments{
-\item{x}{Fitted 'hfr' model.}
+\item{x}{Fitted \code{hfr} model.}
 
 \item{...}{additional methods passed to \code{print}.}
 }
@@ -15,11 +15,11 @@
 Summary statistics of HFR model
 }
 \description{
-Print summary statistics for a fitted HFR model
+Print summary statistics for a fitted \code{hfr} model
 }
 \details{
 The call that produced the object \code{x} is printed, following by a
-data.frame of summary statistics, including the effective degrees of freedom
+\code{data.frame} of summary statistics, including the effective degrees of freedom
 of the model, the R.squared and the regularization parameter.
 }
 \examples{

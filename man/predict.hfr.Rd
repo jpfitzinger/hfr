@@ -2,7 +2,7 @@
 % Please edit documentation in R/predict.hfr.R
 \name{predict.hfr}
 \alias{predict.hfr}
-\title{Model Predictions}
+\title{Model predictions}
 \usage{
 \method{predict}{hfr}(object, newdata = NULL, ...)
 }
@@ -17,10 +17,10 @@
 A vector of predicted values.
 }
 \description{
-Predict values using a fitted Hierarchical Feature Regression
+Predict values using a fitted \code{hfr} model
 }
 \details{
-Predictions are made by multiplying the newdata object with the estimated coefficients.
+Predictions are made by multiplying the \code{newdata} object with the estimated coefficients.
 }
 \examples{
 x = matrix(rnorm(100 * 20), 100, 20)
