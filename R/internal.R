@@ -4,7 +4,7 @@
 #' @importFrom quadprog solve.QP
 #' @importFrom dendextend set get_nodes_xy
 #' @importFrom RColorBrewer brewer.pal
-#' @importFrom graphics abline par segments points mtext rect plot
+#' @importFrom graphics abline segments points mtext rect plot
 
 .get_level_reg <- function(x, y, nvars, nobs, q, intercept, ...) {
 
@@ -171,10 +171,10 @@
   cols <- round(sqrt((cols - min(cols)) / (max(cols) - min(cols))) * (length(pal)-1)+1)
 
   top_node <- dendextend::get_nodes_xy(dend)[1,]
-  graphics::plot(x = rep(1, n), y = dend_heights, type = "n", axes=F, xlab=NA, ylab=NA, ylim=c(0, max(dend_heights)), xlim=c(1,n*1.03))
-  for (i in dend_heights[dend_heights > 1e-4]) graphics::abline(h = i, col="lightgrey", lwd=1, lty = "dashed")
-  graphics::par(new=TRUE)
-  graphics::plot(stats::as.dendrogram(dend), ylim=c(0, max(dend_heights)))
+
+  graphics::plot(stats::as.dendrogram(dend), ylim=c(0, max(dend_heights)),
+                 panel.first=graphics::abline(h = dend_heights[dend_heights > 1e-4],
+                                              col="lightgrey", lwd=1, lty = "dashed"))
   graphics::segments(x0 = top_node[1], y0 = top_node[2], y1 = dend_heights[n])
   graphics::points(x = top_node[1], y = dend_heights[n], pch = 15)
   graphics::rect(n*1.015, c(0, dend_heights[-n]), n*1.03, dend_heights, col = pal[cols], lwd=0.1)
