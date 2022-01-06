@@ -14,11 +14,17 @@
 #' The leaf nodes are colored to indicate the coefficient sign, with the size indicating
 #' the absolute magnitude of the coefficients.
 #'
+#' The average standard errors along the branch of each coefficient can be used
+#' to highlight coefficients that are not statistically significant. When
+#' \code{confidence_level > 0}, branches with a lower confidence are plotted
+#' as dotted lines.
+#'
 #' A color bar on the right indicates the relative contribution of each level to the
 #' coefficient of determination, with darker hues representing a larger contribution.
 #'
 #' @param x Fitted 'hfr' model.
 #' @param show_details print model details on the plot.
+#' @param confidence_level coefficients with a lower approximate statistical confidence are highlighted in the plot, see details. Default is \code{confidence_level=0}.
 #' @param max_leaf_size maximum size of the leaf nodes. Default is \code{max_leaf_size=3}.
 #' @param ... additional methods passed to \code{plot}.
 #' @return A plotted dendrogram.
@@ -32,17 +38,21 @@
 #'
 #' @export
 #'
-#' @seealso \code{hfr}, \code{predict} and \code{coef} methods
+#' @seealso \code{hfr}, \code{se.avg}, \code{predict} and \code{coef} methods
 
 plot.hfr <- function(
   x,
   show_details = TRUE,
+  confidence_level = 0,
   max_leaf_size = 3,
   ...
 ) {
 
   if (class(x)!="hfr")
     stop("object must be of class 'hfr'")
+
+  if (confidence_level > 1 || confidence_level < 0)
+    stop("'confidence_level' must be a scalar between 0 and 1")
 
   clust <- x$hgraph$cluster_object
   phi <- x$hgraph$shrinkage_vector
@@ -75,6 +85,11 @@ plot.hfr <- function(
     }
   }
 
-  .draw_dendro(clust, coefs, heights, expl_variance, var_names, x$df, show_details, max_leaf_size)
+  se <- se.avg(x)[-1]
+  pvals <- pt(abs(coefs / se), NROW(x$y) - x$df - 1, lower.tail = F)
+  dashed <- names(pvals)[pvals > 1 - confidence_level]
+
+  .draw_dendro(clust, coefs, heights, expl_variance, var_names, x$df,
+               show_details, max_leaf_size, dashed)
 
 }

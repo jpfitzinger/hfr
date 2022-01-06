@@ -4,12 +4,14 @@
 \alias{plot.hfr}
 \title{Plot the dendrogram of an HFR model}
 \usage{
-\method{plot}{hfr}(x, show_details = TRUE, max_leaf_size = 3, ...)
+\method{plot}{hfr}(x, show_details = TRUE, confidence_level = 0, max_leaf_size = 3, ...)
 }
 \arguments{
 \item{x}{Fitted 'hfr' model.}
 
 \item{show_details}{print model details on the plot.}
+
+\item{confidence_level}{coefficients with a lower approximate statistical confidence are highlighted in the plot, see details. Default is \code{confidence_level=0}.}
 
 \item{max_leaf_size}{maximum size of the leaf nodes. Default is \code{max_leaf_size=3}.}
 
@@ -34,6 +36,11 @@ the dendrogram has a height of \eqn{(\kappa \times p)}{(\code{kappa} x p)}.
 The leaf nodes are colored to indicate the coefficient sign, with the size indicating
 the absolute magnitude of the coefficients.
 
+The average standard errors along the branch of each coefficient can be used
+to highlight coefficients that are not statistically significant. When
+\code{confidence_level > 0}, branches with a lower confidence are plotted
+as dotted lines.
+
 A color bar on the right indicates the relative contribution of each level to the
 coefficient of determination, with darker hues representing a larger contribution.
 }
@@ -45,7 +52,7 @@ plot(fit)
 
 }
 \seealso{
-\code{hfr}, \code{predict} and \code{coef} methods
+\code{hfr}, \code{se.avg}, \code{predict} and \code{coef} methods
 }
 \author{
 Johann Pfitzinger

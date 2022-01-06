@@ -2,7 +2,7 @@
 #' @importFrom stats hclust cor quantile cutree as.dendrogram
 #' @importFrom RcppArmadillo fastLmPure
 #' @importFrom quadprog solve.QP
-#' @importFrom dendextend set get_nodes_xy
+#' @importFrom dendextend set get_nodes_xy branches_attr_by_labels
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom graphics abline segments points mtext rect plot
 
@@ -148,7 +148,9 @@
 
 }
 
-.draw_dendro <- function(clust, coefs, heights, explained_variance, var_names, df, details, max_leaf_size) {
+.draw_dendro <- function(clust, coefs, heights, explained_variance,
+                         var_names, df, details, max_leaf_size,
+                         dashed = NULL) {
 
   coefs_sizes <- abs(coefs)/max(abs(coefs))
   coefs_sizes <- coefs_sizes * max_leaf_size
@@ -163,6 +165,9 @@
   dend <- dendextend::set(dend, "leaves_pch", 15)
   dend <- dendextend::set(dend, "leaves_cex", coefs_sizes[clust$order])
   dend <- dendextend::set(dend, "leaves_col", coefs_col[clust$order])
+  if (!is.null(dashed)) {
+    dend <- dendextend::branches_attr_by_labels(dend, dashed, 3, "lty", "all")
+  }
 
   pal <- RColorBrewer::brewer.pal(9, "Blues")
   pal <- c("#FFFFFF", pal)
