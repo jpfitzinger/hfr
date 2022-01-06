@@ -1,6 +1,6 @@
 # hfr
 
-`hfr` is an R package that implements a novel cluster-based regularized regression estimator: the **Hierarchical Feature Regression (HFR)**, which mobilizes insights from the domains of machine learning and graph theory to estimate robust parameters for a linear regression. The estimator constructs a supervised feature graph that decomposes parameters along its edges, adjusting first for common variation and successively incorporating idiosyncratic patterns into the fitting process. The graph structure has the effect of shrinking parameters towards group targets, where the extent of shrinkage is governed by a hyperparameter, and group compositions as well as shrinkage targets are determined endogenously. The hyperparameter `kappa` can take on values between `0` and `1` and represents the normalized effective model size. When `kappa = 1` the regression is unregularized resulting in OLS parameters. When `kappa < 1` the model is reduced to an effective model size smaller than the original covariate dimension.
+`hfr` is an R package that implements a novel graph-based regularized regression estimator: the **Hierarchical Feature Regression (HFR)**, which mobilizes insights from the domains of machine learning and graph theory to estimate robust parameters for a linear regression. The estimator constructs a supervised feature graph that decomposes parameters along its edges, adjusting first for common variation and successively incorporating idiosyncratic patterns into the fitting process. The graph structure has the effect of shrinking parameters towards group targets, where the extent of shrinkage is governed by a hyperparameter, and group compositions as well as shrinkage targets are determined endogenously. The hyperparameter `kappa` can take on values between `0` and `1` and represents the normalized effective model size. When `kappa = 1` the regression is unregularized resulting in OLS parameters. When `kappa < 1` the model is reduced to an effective model size smaller than the original covariate dimension.
 
 ## Usage
 
@@ -42,6 +42,10 @@ Finally, standard functions such as `coef`, `predict` and `print` can be used to
 ## Installation
 
 ```
+# CRAN
+install.packages("hfr")
+
+# Latest Dev version
 devtools::install_github("https://github.com/jpfitzinger/hfr")
 ```
 
