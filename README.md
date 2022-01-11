@@ -55,20 +55,20 @@ plot(mod, confidence_level = 0.95, max_leaf_size = 2, show_details = FALSE)
 <img src="README_files/figure-gfm/unnamed-chunk-3-1.png" style="display: block; margin: auto;" />
 
 The plot displays the optimal supervised feature graph. The size of the
-tree represents the effective model size and reduces the model from
-`p = 20` variables to `14`. The plot conveys a wealth of additional
-information:
+tree represents the effective model size — in this case reducing the
+model from `p = 20` variables to an effective size of `14` variables.
+The plot conveys a wealth of additional information:
 
 -   Adjacent variables that are merged low in the graph have a similar
     conditional explanatory effect on `y`
--   The horizontal distance between levels indicates the weight of that
-    level in the regression
+-   The vertical distance between levels indicates the weight of the
+    levels in the regression
 -   The size of the leaf nodes represents the coefficient size and the
     color represents the sign
 -   Dashed edges are statistically insignificant (see `?se.avg` for
     standard errors)
 -   Darker hues in the sidebar signify a higher contribution of that
-    level to the total explained variance
+    level to total explained variance
 
 Standard functions such as `coef`, `predict` and `print` can be used to
 interact with fitted `hfr` or `cv.hfr` objects.
@@ -83,5 +83,5 @@ interact with fitted `hfr` or `cv.hfr` objects.
 
 ## References
 
-Pfitzinger, J. (2021). Cluster Regularization via a Hierarchical Feature
+Pfitzinger, J. (2022). Cluster Regularization via a Hierarchical Feature
 Regression. *arXiv 2107.04831\[statML\]*
