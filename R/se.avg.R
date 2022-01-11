@@ -14,7 +14,7 @@
 #' @return A vector of standard errors.
 #' @author Johann Pfitzinger
 #' @references
-#' Pfitzinger, J. (2021).
+#' Pfitzinger, J. (2022).
 #' Cluster Regularization via a Hierarchical Feature Regression.
 #' arXiv 2107.04831[statML]
 #'
