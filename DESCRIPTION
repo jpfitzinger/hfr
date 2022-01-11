@@ -2,7 +2,7 @@ Package: hfr
 Type: Package
 Title: Estimate Hierarchical Feature Regression Models
 Date: 2022-01-09
-Version: 0.5.0
+Version: 0.6.0
 Author: Johann Pfitzinger [aut, cre]
 Maintainer: Johann Pfitzinger <johann.pfitzinger@gmail.com>
 Description: Provides functions for the estimation, plotting, predicting and cross-validation of hierarchical feature regression models as described in Pfitzinger (2021) <arXiv:2107.04831>.
