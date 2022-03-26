@@ -39,6 +39,8 @@
 #' @export
 #'
 #' @seealso \code{hfr}, \code{se.avg}, \code{predict} and \code{coef} methods
+#'
+#' @importFrom stats pt
 
 plot.hfr <- function(
   x,
@@ -86,7 +88,7 @@ plot.hfr <- function(
   }
 
   se <- se.avg(x)[-1]
-  pvals <- pt(abs(coefs / se), NROW(x$y) - x$df - 1, lower.tail = F)
+  pvals <- stats::pt(abs(coefs / se), NROW(x$y) - x$df - 1, lower.tail = F)
   dashed <- names(pvals)[pvals > 1 - confidence_level]
 
   .draw_dendro(clust, coefs, heights, expl_variance, var_names, x$df,
