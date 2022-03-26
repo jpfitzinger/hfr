@@ -4,7 +4,16 @@
 \alias{hfr}
 \title{Fit a hierarchical feature regression}
 \usage{
-hfr(x, y, kappa = 1, q = NULL, intercept = TRUE, standardize = TRUE, ...)
+hfr(
+  x,
+  y,
+  kappa = 1,
+  q = NULL,
+  intercept = TRUE,
+  standardize = TRUE,
+  partial_method = c("pairwise", "shrinkage"),
+  ...
+)
 }
 \arguments{
 \item{x}{Input matrix or data.frame, of dimension \eqn{(N\times p)}{(N x p)}; each row is an observation vector.}
@@ -18,6 +27,8 @@ hfr(x, y, kappa = 1, q = NULL, intercept = TRUE, standardize = TRUE, ...)
 \item{intercept}{Should intercept be fitted. Default is \code{intercept=TRUE}.}
 
 \item{standardize}{Logical flag for x variable standardization prior to fitting the model. The coefficients are always returned on the original scale. Default is \code{standardize=TRUE}.}
+
+\item{partial_method}{Indicate whether to use pairwise partial correlations, or shrinkage partial correlations.}
 
 \item{...}{Additional arguments passed to \code{hclust}.}
 }

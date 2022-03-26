@@ -22,6 +22,7 @@
 #' @param standardize Logical flag for \code{x} variable standardization prior to fitting the model. The coefficients are always returned on the original scale. Default is \code{standardize=TRUE}.
 #' @param nfolds The number of folds for k-fold cross validation. Default is \code{nfolds=10}.
 #' @param foldid An optional vector of values between \code{1} and \code{nfolds} identifying what fold each observation is in. If supplied, \code{nfolds} can be missing.
+#' @param partial_method Indicate whether to use pairwise partial correlations, or shrinkage partial correlations.
 #' @param ...  Additional arguments passed to \code{hclust}.
 #' @return A 'cv.hfr' regression object.
 #' @author Johann Pfitzinger
@@ -53,6 +54,7 @@ cv.hfr <- function(
   standardize = TRUE,
   nfolds = 10,
   foldid = NULL,
+  partial_method = c("pairwise", "shrinkage"),
   ...
 ) {
 
@@ -80,6 +82,8 @@ cv.hfr <- function(
   if (any(kappa_grid > 1) || any(kappa_grid < 0)) {
     stop("each 'kappa' must be between 0 and 1.")
   }
+
+  partial_method = match.arg(partial_method)
 
   if (is.null(foldid))
     foldid = sample(rep(seq(nfolds), length = nobs))
@@ -122,7 +126,7 @@ cv.hfr <- function(
         xs = x_fit
       }
 
-      v = .get_level_reg(xs, y_fit, nvars, nobs, q, intercept, ...)
+      v = .get_level_reg(xs, y_fit, nvars, nobs, q, intercept, partial_method, ...)
       meta_opt <- .get_meta_opt(y_fit, kappa_grid, nvars, nobs, var_names, standardize, intercept, standard_sd, standard_mean, v)
 
       beta_mat <- meta_opt$beta
@@ -154,7 +158,7 @@ cv.hfr <- function(
     xs <- x
   }
 
-  v = .get_level_reg(xs, y, nvars, nobs, q, intercept, ...)
+  v = .get_level_reg(xs, y, nvars, nobs, q, intercept, partial_method, ...)
   meta_opt <- .get_meta_opt(y, kappa_grid, nvars, nobs, var_names, standardize, intercept, standard_sd, standard_mean, v)
 
   beta_mat <- meta_opt$beta

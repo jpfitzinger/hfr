@@ -25,6 +25,7 @@
 #' @param q Thinning parameter representing the quantile cut-off (in terms of contributed variance) above which to consider levels in the hierarchy. This can used to reduce the number of levels in high-dimensional problems. Default is no thinning.
 #' @param intercept Should intercept be fitted. Default is \code{intercept=TRUE}.
 #' @param standardize Logical flag for x variable standardization prior to fitting the model. The coefficients are always returned on the original scale. Default is \code{standardize=TRUE}.
+#' @param partial_method Indicate whether to use pairwise partial correlations, or shrinkage partial correlations.
 #' @param ...  Additional arguments passed to \code{hclust}.
 #' @return An 'hfr' regression object.
 #' @author Johann Pfitzinger
@@ -53,6 +54,7 @@ hfr <- function(
   q = NULL,
   intercept = TRUE,
   standardize = TRUE,
+  partial_method = c("pairwise", "shrinkage"),
   ...
   ) {
 
@@ -81,6 +83,8 @@ hfr <- function(
     stop("'kappa' must be between 0 and 1")
   }
 
+  partial_method = match.arg(partial_method)
+
   # Get feature names
   var_names <- colnames(x)
   if (is.null(var_names)) var_names <- paste("X", 1:ncol(x), sep = ".")
@@ -108,7 +112,7 @@ hfr <- function(
     xs <- x
   }
 
-  v = .get_level_reg(xs, y, nvars, nobs, q, intercept, ...)
+  v = .get_level_reg(xs, y, nvars, nobs, q, intercept, partial_method, ...)
   meta_opt <- .get_meta_opt(y, kappa, nvars, nobs, var_names, standardize, intercept, standard_sd, standard_mean, v)
 
   beta <- drop(meta_opt$beta)

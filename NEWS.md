@@ -5,3 +5,4 @@
 ## hfr 0.6.0
 
 - The plotting functionality has been expanded to highlight insignificant branches
+- Option to compute partial correlations using the pairwise (default) approach, or shrinkage approach

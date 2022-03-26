@@ -13,6 +13,7 @@ cv.hfr(
   standardize = TRUE,
   nfolds = 10,
   foldid = NULL,
+  partial_method = c("pairwise", "shrinkage"),
   ...
 )
 }
@@ -32,6 +33,8 @@ cv.hfr(
 \item{nfolds}{The number of folds for k-fold cross validation. Default is \code{nfolds=10}.}
 
 \item{foldid}{An optional vector of values between \code{1} and \code{nfolds} identifying what fold each observation is in. If supplied, \code{nfolds} can be missing.}
+
+\item{partial_method}{Indicate whether to use pairwise partial correlations, or shrinkage partial correlations.}
 
 \item{...}{Additional arguments passed to \code{hclust}.}
 }
