@@ -1,4 +1,9 @@
 
+<!-- badges: start -->
+
+![CRAN](https://img.shields.io/cran/v/hfr?label=CRAN)
+<!-- badges: end -->
+
 `hfr` is an `R` package that implements a novel graph-based regularized
 regression estimator: the **Hierarchical Feature Regression (HFR)**. The
 method mobilizes insights from the domains of machine learning and graph
