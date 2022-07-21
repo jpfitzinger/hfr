@@ -39,7 +39,7 @@ se.avg <- function(
   object
 ) {
 
-  if (class(object)!="hfr")
+  if (!inherits(object, "hfr"))
     stop("object must be of class 'hfr'")
 
   standardize <- object$call$standardize

@@ -50,7 +50,7 @@ plot.hfr <- function(
   ...
 ) {
 
-  if (class(x)!="hfr")
+  if (!inherits(x, "hfr"))
     stop("object must be of class 'hfr'")
 
   if (confidence_level > 1 || confidence_level < 0)
