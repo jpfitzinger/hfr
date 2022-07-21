@@ -7,7 +7,7 @@
 #' @importFrom graphics abline segments points mtext rect plot
 #' @importFrom corpcor pcor.shrink
 
-.get_level_reg <- function(x, y, nvars, nobs, q, intercept, partial_method, ...) {
+.get_level_reg <- function(x, y, wts, nvars, nobs, q, intercept, partial_method, ...) {
 
   # Set default cluster method
   hclust_args <- match.call(expand.dots = F)$...
@@ -90,7 +90,7 @@
     if (intercept) {
 
       x_i <- cbind(1, X_list[[i]])
-      mod <- RcppArmadillo::fastLmPure(x_i, y)
+      mod <- RcppArmadillo::fastLmPure(x_i * wts, y * wts)
       mod_coef <- mod$coefficients
       mod_coef[is.na(mod_coef)] <- 0
       coef_list[[i]] <- c(mod_coef[1], t(S[[i]]) %*% mod_coef[-1])
@@ -99,7 +99,7 @@
     } else {
 
       x_i <- X_list[[i]]
-      mod <- RcppArmadillo::fastLmPure(x_i, y)
+      mod <- RcppArmadillo::fastLmPure(x_i * wts, y * wts)
       mod_coef <- mod$coefficients
       mod_coef[is.na(mod_coef)] <- 0
       coef_list[[i]] <- t(S[[i]]) %*% mod_coef
