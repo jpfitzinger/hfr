@@ -7,6 +7,7 @@
 cv.hfr(
   x,
   y,
+  weights = NULL,
   kappa_grid = seq(0, 1, by = 0.1),
   q = NULL,
   intercept = TRUE,
@@ -21,6 +22,8 @@ cv.hfr(
 \item{x}{Input matrix or data.frame, of dimension \eqn{(N\times p)}{(N x p)}; each row is an observation vector.}
 
 \item{y}{Response variable.}
+
+\item{weights}{an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector. If non-NULL, weighted least squares is used for the level-specific regressions.}
 
 \item{kappa_grid}{A vector of target effective degrees of freedom of the regression.}
 
