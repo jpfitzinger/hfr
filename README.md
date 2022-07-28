@@ -57,7 +57,7 @@ par(family = "sans", cex = 0.7)
 plot(mod, confidence_level = 0.95, max_leaf_size = 2, show_details = FALSE)
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-3-1.png" style="display: block; margin: auto;" />
+<img src="man/figures/unnamed-chunk-3-1.png" style="display: block; margin: auto;" />
 
 The plot displays the optimal supervised feature graph. The size of the
 tree represents the effective model size — in this case reducing the
