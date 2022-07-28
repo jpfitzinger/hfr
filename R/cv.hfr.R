@@ -106,7 +106,7 @@ cv.hfr <- function(
   # Get feature names
   var_names <- colnames(x)
   if (is.null(var_names)) var_names <- paste("X", 1:ncol(x), sep = ".")
-  if (intercept) var_names <- c("`(Intercept)`", var_names)
+  if (intercept) var_names <- c("(Intercept)", var_names)
 
   # Convert 'x' to matrix
   x <- data.matrix(x)
