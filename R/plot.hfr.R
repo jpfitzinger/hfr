@@ -38,7 +38,7 @@
 #'
 #' @export
 #'
-#' @seealso \code{hfr}, \code{se.avg}, \code{predict} and \code{coef} methods
+#' @seealso \code{\link{hfr}}, \code{\link{se.avg}}, \code{\link{predict}} and \code{\link{coef}} methods
 #'
 #' @importFrom stats pt
 

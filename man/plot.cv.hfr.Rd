@@ -47,7 +47,7 @@ plot(fit, kappa = 0.5)
 
 }
 \seealso{
-\code{hfr}, \code{predict} and \code{coef} methods
+\code{\link{cv.hfr}}, \code{\link{predict}} and \code{\link{coef}} methods
 }
 \author{
 Johann Pfitzinger
