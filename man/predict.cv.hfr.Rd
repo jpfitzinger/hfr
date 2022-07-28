@@ -34,7 +34,7 @@ predict(fit, kappa = 0.1)
 
 }
 \seealso{
-\code{hfr}, \code{cv.hfr} and \code{coef} methods
+\code{\link{hfr}}, \code{\link{cv.hfr}} and \code{\link{coef}} methods
 }
 \author{
 Johann Pfitzinger

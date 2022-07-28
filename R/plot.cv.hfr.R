@@ -33,7 +33,7 @@
 #'
 #' @export
 #'
-#' @seealso \code{hfr}, \code{predict} and \code{coef} methods
+#' @seealso \code{\link{cv.hfr}}, \code{\link{predict}} and \code{\link{coef}} methods
 
 plot.cv.hfr <- function(
   x,

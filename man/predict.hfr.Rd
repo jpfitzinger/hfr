@@ -30,7 +30,7 @@ predict(fit)
 
 }
 \seealso{
-\code{hfr}, \code{cv.hfr} and \code{coef} methods
+\code{\link{hfr}}, \code{\link{cv.hfr}} and \code{\link{coef}} methods
 }
 \author{
 Johann Pfitzinger

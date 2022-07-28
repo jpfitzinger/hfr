@@ -30,7 +30,7 @@ print(fit)
 
 }
 \seealso{
-\code{hfr}, \code{predict}, \code{plot} and \code{coef} methods
+\code{\link{hfr}}, \code{\link{cv.hfr}} and \code{\link{coef}} methods
 }
 \author{
 Johann Pfitzinger

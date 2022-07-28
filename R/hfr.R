@@ -43,7 +43,7 @@
 #'
 #' @export
 #'
-#' @seealso \code{cv.hfr}, \code{coef}, \code{plot} and \code{predict} methods
+#' @seealso \code{\link{cv.hfr}}, \code{\link{se.avg}}, \code{\link{coef}}, \code{\link{plot}} and \code{\link{predict}} methods
 #'
 #' @importFrom stats sd
 

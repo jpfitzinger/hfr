@@ -40,7 +40,7 @@
 #'
 #' @export
 #'
-#' @seealso \code{hfr}, \code{coef} and \code{predict} methods
+#' @seealso \code{\link{hfr}}, \code{\link{coef}}, \code{\link{plot}} and \code{\link{predict}} methods
 #'
 #' @importFrom quadprog solve.QP
 #' @importFrom stats sd

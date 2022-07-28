@@ -72,7 +72,7 @@ Cluster Regularization via a Hierarchical Feature Regression.
 arXiv 2107.04831[statML]
 }
 \seealso{
-\code{cv.hfr}, \code{coef}, \code{plot} and \code{predict} methods
+\code{\link{cv.hfr}}, \code{\link{se.avg}}, \code{\link{coef}}, \code{\link{plot}} and \code{\link{predict}} methods
 }
 \author{
 Johann Pfitzinger

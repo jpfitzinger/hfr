@@ -30,7 +30,7 @@
 #'
 #' @export
 #'
-#' @seealso \code{cv.hfr}, \code{coef}, \code{plot} and \code{predict} methods
+#' @seealso \code{\link{hfr}} method
 #'
 #' @importFrom stats sd
 

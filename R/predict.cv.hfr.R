@@ -21,7 +21,7 @@
 #'
 #' @export
 #'
-#' @seealso \code{hfr}, \code{cv.hfr} and \code{coef} methods
+#' @seealso \code{\link{hfr}}, \code{\link{cv.hfr}} and \code{\link{coef}} methods
 #'
 #' @importFrom stats fitted
 #' @importFrom stats coef
