@@ -24,6 +24,7 @@
 #' @param nfolds The number of folds for k-fold cross validation. Default is \code{nfolds=10}.
 #' @param foldid An optional vector of values between \code{1} and \code{nfolds} identifying what fold each observation is in. If supplied, \code{nfolds} can be missing.
 #' @param partial_method Indicate whether to use pairwise partial correlations, or shrinkage partial correlations.
+#' @param ridge_lambda Optional penalty for level-specific regressions (useful in high-dimensional case)
 #' @param ...  Additional arguments passed to \code{hclust}.
 #' @return A 'cv.hfr' regression object.
 #' @author Johann Pfitzinger
@@ -57,6 +58,7 @@ cv.hfr <- function(
   nfolds = 10,
   foldid = NULL,
   partial_method = c("pairwise", "shrinkage"),
+  ridge_lambda = 0,
   ...
 ) {
 
@@ -140,7 +142,7 @@ cv.hfr <- function(
         xs = x_fit
       }
 
-      v = .get_level_reg(xs, y_fit, wts[!ix], nvars, nobs, q, intercept, partial_method, ...)
+      v = .get_level_reg(xs, y_fit, wts[!ix], nvars, nobs, q, intercept, partial_method, ridge_lambda, ...)
       meta_opt <- .get_meta_opt(y_fit, kappa_grid, nvars, nobs, var_names, standardize, intercept, standard_sd, standard_mean, v)
 
       beta_mat <- meta_opt$beta
@@ -172,7 +174,7 @@ cv.hfr <- function(
     xs <- x
   }
 
-  v = .get_level_reg(xs, y, wts, nvars, nobs, q, intercept, partial_method, ...)
+  v = .get_level_reg(xs, y, wts, nvars, nobs, q, intercept, partial_method, ridge_lambda, ...)
   meta_opt <- .get_meta_opt(y, kappa_grid, nvars, nobs, var_names, standardize, intercept, standard_sd, standard_mean, v)
 
   beta_mat <- meta_opt$beta
