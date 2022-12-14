@@ -15,6 +15,7 @@ cv.hfr(
   nfolds = 10,
   foldid = NULL,
   partial_method = c("pairwise", "shrinkage"),
+  ridge_lambda = 0,
   ...
 )
 }
@@ -38,6 +39,8 @@ cv.hfr(
 \item{foldid}{An optional vector of values between \code{1} and \code{nfolds} identifying what fold each observation is in. If supplied, \code{nfolds} can be missing.}
 
 \item{partial_method}{Indicate whether to use pairwise partial correlations, or shrinkage partial correlations.}
+
+\item{ridge_lambda}{Optional penalty for level-specific regressions (useful in high-dimensional case)}
 
 \item{...}{Additional arguments passed to \code{hclust}.}
 }
