@@ -1,13 +1,12 @@
 
-#' @importFrom stats hclust cor quantile cutree as.dendrogram as.dist
-#' @importFrom RcppArmadillo fastLmPure
+#' @importFrom stats hclust cor quantile cutree as.dendrogram as.dist dist
 #' @importFrom quadprog solve.QP
 #' @importFrom dendextend set get_nodes_xy branches_attr_by_labels
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom graphics abline segments points mtext rect plot
 #' @importFrom corpcor pcor.shrink
 
-.get_level_reg <- function(x, y, wts, nvars, nobs, q, intercept, partial_method, ...) {
+.get_level_reg <- function(x, y, wts, nvars, nobs, q, intercept, partial_method, ridge_lambda, ...) {
 
   # Set default cluster method
   hclust_args <- match.call(expand.dots = F)$...
@@ -44,7 +43,11 @@
 
   }
 
-  clust <- do.call(hclust, append(list(d = distmat), hclust_args))
+  if (nvars > 2) {
+    clust <- do.call(hclust, append(list(d = distmat), hclust_args))
+  } else {
+    clust <- do.call(hclust, append(list(d = stats::dist(corr)), hclust_args))
+  }
 
   clust$height <- sort(clust$height)
   clust_height_diff <- clust$height - c(clust$height[1], clust$height[-length(clust$height)])
@@ -90,7 +93,7 @@
     if (intercept) {
 
       x_i <- cbind(1, X_list[[i]])
-      mod <- RcppArmadillo::fastLmPure(x_i * wts, y * wts)
+      mod <- .custom_lm_ridge(x_i * wts, y * wts, lambda = ridge_lambda)
       mod_coef <- mod$coefficients
       mod_coef[is.na(mod_coef)] <- 0
       coef_list[[i]] <- c(mod_coef[1], t(S[[i]]) %*% mod_coef[-1])
@@ -99,7 +102,7 @@
     } else {
 
       x_i <- X_list[[i]]
-      mod <- RcppArmadillo::fastLmPure(x_i * wts, y * wts)
+      mod <- .custom_lm_ridge(x_i * wts, y * wts, lambda = ridge_lambda)
       mod_coef <- mod$coefficients
       mod_coef[is.na(mod_coef)] <- 0
       coef_list[[i]] <- t(S[[i]]) %*% mod_coef
@@ -212,5 +215,19 @@
   if (details) {
     graphics::mtext(sprintf("Effective df: %.1f; R-squared: %.2f", df, max(explained_variance)), side=3, line=1, at=0, adj=0, col="black", las=1)
   }
+
+}
+
+.custom_lm_ridge <- function(X, y, lambda) {
+
+  p <- ncol(X)
+  n <- nrow(X)
+  XX <- crossprod(X)
+  Xy <- crossprod(X, y)
+  invXX <- solve(XX + lambda * n * diag(p))
+  beta <- drop(invXX %*% Xy)
+  var_hat <- sum((y - X %*% beta)^2) / (n - p)
+  std_err <- sqrt(diag(invXX * var_hat))
+  return(list(coefficients = beta, stderr = std_err))
 
 }
