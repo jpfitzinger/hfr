@@ -42,7 +42,7 @@ coefficient of determination, with darker hues representing a larger contributio
 \examples{
 x = matrix(rnorm(100 * 20), 100, 20)
 y = rnorm(100)
-fit = cv.hfr(x, y, kappa_grid = seq(0, 1, by = 0.1))
+fit = cv.hfr(x, y, kappa = seq(0, 1, by = 0.1))
 plot(fit, kappa = 0.5)
 
 }

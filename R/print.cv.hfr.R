@@ -14,7 +14,7 @@
 #' @examples
 #' x = matrix(rnorm(100 * 20), 100, 20)
 #' y = rnorm(100)
-#' fit = cv.hfr(x, y, kappa_grid = seq(0, 1, by = 0.1))
+#' fit = cv.hfr(x, y, kappa = seq(0, 1, by = 0.1))
 #' print(fit)
 #'
 #' @export
@@ -34,7 +34,7 @@ print.cv.hfr <- function(x, ...) {
     R2 <- c(R2, 1 - sum(x$residuals[,i]^2) / sum((x$y - mean(x$y))^2))
   }
   out = data.frame(Df = x$df, R.squared = round(R2, 2), check.names = FALSE)
-  out$kappa <- x$kappa_grid
+  out$kappa <- x$kappa
   if (!is.null(x$cv_mse)) {
     out$MSE <- round(x$cv_mse, 2)
   }

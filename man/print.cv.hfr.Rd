@@ -25,7 +25,7 @@ of the model, the R.squared and the regularization parameter.
 \examples{
 x = matrix(rnorm(100 * 20), 100, 20)
 y = rnorm(100)
-fit = cv.hfr(x, y, kappa_grid = seq(0, 1, by = 0.1))
+fit = cv.hfr(x, y, kappa = seq(0, 1, by = 0.1))
 print(fit)
 
 }

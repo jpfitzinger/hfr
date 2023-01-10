@@ -17,7 +17,7 @@
 #' @param x Input matrix or data.frame, of dimension \eqn{(N\times p)}{(N x p)}; each row is an observation vector.
 #' @param y Response variable.
 #' @param weights an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector. If non-NULL, weighted least squares is used for the level-specific regressions.
-#' @param kappa_grid A vector of target effective degrees of freedom of the regression.
+#' @param kappa A vector of target effective degrees of freedom of the regression.
 #' @param q Thinning parameter representing the quantile cut-off (in terms of contributed variance) above which to consider levels in the hierarchy. This can used to reduce the number of levels in high-dimensional problems. Default is no thinning.
 #' @param intercept Should intercept be fitted. Default is \code{intercept=TRUE}.
 #' @param standardize Logical flag for \code{x} variable standardization prior to fitting the model. The coefficients are always returned on the original scale. Default is \code{standardize=TRUE}.
@@ -36,7 +36,7 @@
 #' @examples
 #' x = matrix(rnorm(100 * 20), 100, 20)
 #' y = rnorm(100)
-#' fit = cv.hfr(x, y, kappa_grid = seq(0, 1, by = 0.1))
+#' fit = cv.hfr(x, y, kappa = seq(0, 1, by = 0.1))
 #' coef(fit)
 #'
 #' @export
@@ -51,7 +51,7 @@ cv.hfr <- function(
   x,
   y,
   weights = NULL,
-  kappa_grid = seq(0, 1, by = 0.1),
+  kappa = seq(0, 1, by = 0.1),
   q = NULL,
   intercept = TRUE,
   standardize = TRUE,
@@ -83,7 +83,7 @@ cv.hfr <- function(
   if (any(is.na(y)) || any(is.na(x)))
     stop("'NA' values in 'x' or 'y'")
 
-  if (any(kappa_grid > 1) || any(kappa_grid < 0)) {
+  if (any(kappa > 1) || any(kappa < 0)) {
     stop("each 'kappa' must be between 0 and 1.")
   }
 
@@ -143,7 +143,7 @@ cv.hfr <- function(
       }
 
       v = .get_level_reg(xs, y_fit, wts[!ix], nvars, nobs, q, intercept, partial_method, ridge_lambda, ...)
-      meta_opt <- .get_meta_opt(y_fit, kappa_grid, nvars, nobs, var_names, standardize, intercept, standard_sd, standard_mean, v)
+      meta_opt <- .get_meta_opt(y_fit, kappa, nvars, nobs, var_names, standardize, intercept, standard_sd, standard_mean, v)
 
       beta_mat <- meta_opt$beta
       opt_par_mat <- meta_opt$opt_par
@@ -153,7 +153,7 @@ cv.hfr <- function(
 
     }
     cv_mse <- colMeans(mse)
-    best_kappa <- kappa_grid[which.min(cv_mse)]
+    best_kappa <- kappa[which.min(cv_mse)]
   } else {
     best_kappa <- NULL
     cv_mse <- NULL
@@ -175,7 +175,7 @@ cv.hfr <- function(
   }
 
   v = .get_level_reg(xs, y, wts, nvars, nobs, q, intercept, partial_method, ridge_lambda, ...)
-  meta_opt <- .get_meta_opt(y, kappa_grid, nvars, nobs, var_names, standardize, intercept, standard_sd, standard_mean, v)
+  meta_opt <- .get_meta_opt(y, kappa, nvars, nobs, var_names, standardize, intercept, standard_sd, standard_mean, v)
 
   beta_mat <- meta_opt$beta
   opt_par_mat <- meta_opt$opt_par
@@ -200,7 +200,7 @@ cv.hfr <- function(
   out <- list(
     call = match.call(),
     coefficients = beta_mat,
-    kappa_grid = kappa_grid,
+    kappa = kappa,
     best_kappa = best_kappa,
     cv_mse = cv_mse,
     fitted.values = fitted,

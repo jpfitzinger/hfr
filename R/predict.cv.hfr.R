@@ -16,7 +16,7 @@
 #' @examples
 #' x = matrix(rnorm(100 * 20), 100, 20)
 #' y = rnorm(100)
-#' fit = cv.hfr(x, y, kappa_grid = seq(0, 1, by = 0.1))
+#' fit = cv.hfr(x, y, kappa = seq(0, 1, by = 0.1))
 #' predict(fit, kappa = 0.1)
 #'
 #' @export
@@ -41,15 +41,19 @@ predict.cv.hfr <- function(
     kappa <- object$best_kappa
   }
   if (!is.null(kappa)) {
-    if (is.null(object$kappa_grid))
-      stop("no 'kappa_grid' in 'object'")
-    if (!any(kappa==object$kappa_grid))
-      stop("'kappa' must be in 'kappa_grid' of the object")
-    return_ix <- which(kappa==object$kappa_grid)
+    if (is.null(object$kappa))
+      stop("no 'kappa' in 'object'")
+    if (!any(kappa==object$kappa))
+      stop("'kappa' must be in 'kappa' of the object")
+    return_ix <- which(kappa==object$kappa)
   }
 
   if (is.null(newdata)) {
     return(stats::fitted(object)[,return_ix])
+  }
+
+  if (is.null(dim(newdata))) {
+    newdata <- matrix(newdata, nrow = 1)
   }
 
   if (is.null(nobs <- nrow(newdata)))

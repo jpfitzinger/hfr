@@ -8,7 +8,7 @@ cv.hfr(
   x,
   y,
   weights = NULL,
-  kappa_grid = seq(0, 1, by = 0.1),
+  kappa = seq(0, 1, by = 0.1),
   q = NULL,
   intercept = TRUE,
   standardize = TRUE,
@@ -26,7 +26,7 @@ cv.hfr(
 
 \item{weights}{an optional vector of weights to be used in the fitting process. Should be NULL or a numeric vector. If non-NULL, weighted least squares is used for the level-specific regressions.}
 
-\item{kappa_grid}{A vector of target effective degrees of freedom of the regression.}
+\item{kappa}{A vector of target effective degrees of freedom of the regression.}
 
 \item{q}{Thinning parameter representing the quantile cut-off (in terms of contributed variance) above which to consider levels in the hierarchy. This can used to reduce the number of levels in high-dimensional problems. Default is no thinning.}
 
@@ -66,7 +66,7 @@ of the cross validation is given by \code{best_kappa} in the output object.
 \examples{
 x = matrix(rnorm(100 * 20), 100, 20)
 y = rnorm(100)
-fit = cv.hfr(x, y, kappa_grid = seq(0, 1, by = 0.1))
+fit = cv.hfr(x, y, kappa = seq(0, 1, by = 0.1))
 coef(fit)
 
 }

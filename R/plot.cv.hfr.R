@@ -28,7 +28,7 @@
 #' @examples
 #' x = matrix(rnorm(100 * 20), 100, 20)
 #' y = rnorm(100)
-#' fit = cv.hfr(x, y, kappa_grid = seq(0, 1, by = 0.1))
+#' fit = cv.hfr(x, y, kappa = seq(0, 1, by = 0.1))
 #' plot(fit, kappa = 0.5)
 #'
 #' @export
@@ -51,11 +51,11 @@ plot.cv.hfr <- function(
     kappa <- x$best_kappa
   }
   if (!is.null(kappa)) {
-    if (is.null(x$kappa_grid))
-      stop("no 'kappa_grid' in 'object'")
-    if (!any(round(kappa, 6)==round(x$kappa_grid, 6)))
-      stop("'kappa' must be in 'kappa_grid' of the object")
-    return_ix <- which(round(kappa, 6)==round(x$kappa_grid, 6))
+    if (is.null(x$kappa))
+      stop("no 'kappa' in 'object'")
+    if (!any(round(kappa, 6)==round(x$kappa, 6)))
+      stop("'kappa' must be in 'kappa' of the object")
+    return_ix <- which(round(kappa, 6)==round(x$kappa, 6))
   }
 
   clust <- x$hgraph$cluster_object
