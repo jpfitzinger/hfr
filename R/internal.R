@@ -170,7 +170,7 @@
 
   }
 
-  colnames(beta_mat) <- kappa
+  colnames(beta_mat) <- paste0("s", 1:grid_size)
 
   return(list(beta = beta_mat, opt_par = opt_par_mat))
 
