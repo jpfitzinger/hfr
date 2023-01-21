@@ -1,7 +1,7 @@
 Package: hfr
 Type: Package
 Title: Estimate Hierarchical Feature Regression Models
-Date: 2022-12-14
+Date: 2023-01-21
 Version: 0.6.1
 Author: Johann Pfitzinger [aut, cre]
 Maintainer: Johann Pfitzinger <johann.pfitzinger@gmail.com>
@@ -9,4 +9,4 @@ Description: Provides functions for the estimation, plotting, predicting and cro
 License: GPL-2
 Imports: quadprog, stats, dendextend, RColorBrewer, corpcor
 Encoding: UTF-8
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
