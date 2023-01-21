@@ -11,4 +11,5 @@
 ## hfr 0.6.1
 
 - Add an optional level-specific ridge_lambda parameter to penalize level-specific regressions
-- Bugfixes
+- Rename 'kappa_grid' argument to 'kappa' in 'cv.hfr' (for consistency across different methods)
+- Minor bugfixes
