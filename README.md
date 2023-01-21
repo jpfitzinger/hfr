@@ -64,16 +64,16 @@ tree represents the effective model size — in this case reducing the
 model from `p = 20` variables to an effective size of `14` variables.
 The plot conveys a wealth of additional information:
 
--   Adjacent variables that are merged low in the graph have a similar
-    conditional explanatory effect on `y`
--   The vertical distance between levels indicates the weight of the
-    levels in the regression
--   The size of the leaf nodes represents the coefficient size and the
-    color represents the sign
--   Dashed edges are statistically insignificant (see `?se.avg` for
-    standard errors)
--   Darker hues in the sidebar signify a higher contribution of that
-    level to total explained variance
+- Adjacent variables that are merged low in the graph have a similar
+  conditional explanatory effect on `y`
+- The vertical distance between levels indicates the weight of the
+  levels in the regression
+- The size of the leaf nodes represents the coefficient size and the
+  color represents the sign
+- Dashed edges are statistically insignificant (see `?se.avg` for
+  standard errors)
+- Darker hues in the sidebar signify a higher contribution of that level
+  to total explained variance
 
 Standard functions such as `coef`, `predict` and `print` can be used to
 interact with fitted `hfr` or `cv.hfr` objects.
