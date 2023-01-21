@@ -35,6 +35,10 @@ predict.hfr <- function(
   if (is.null(newdata))
     return(stats::fitted(object))
 
+  if (is.null(dim(newdata))) {
+    newdata <- matrix(newdata, nrow = 1)
+  }
+
   if (is.null(nobs <- nrow(newdata)))
     stop("'newdata' must be a matrix")
   if (nobs == 0L)
