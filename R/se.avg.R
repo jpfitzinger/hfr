@@ -45,8 +45,8 @@ se.avg <- function(
   standardize <- object$call$standardize
   intercept <- object$call$intercept
 
-  if (is.null(standardize)) standardize <- TRUE
-  if (is.null(intercept)) intercept <- TRUE
+  if (is.null(standardize)) standardize <- TRUE else standardize <- as.logical(as.character(standardize))
+  if (is.null(intercept)) intercept <- TRUE else intercept <- as.logical(as.character(intercept))
 
   nlevels <- length(object$hgraph$shrinkage_vector)
 
