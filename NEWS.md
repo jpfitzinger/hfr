@@ -13,3 +13,7 @@
 - Add an optional level-specific ridge_lambda parameter to penalize level-specific regressions
 - Rename 'kappa_grid' argument to 'kappa' in 'cv.hfr' (for consistency across different methods)
 - Minor bugfixes
+
+## hfr 0.6.2
+
+- Minor bugfixes in se.avg()
