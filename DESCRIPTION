@@ -10,3 +10,5 @@ License: GPL-2
 Imports: quadprog, stats, dendextend, RColorBrewer, corpcor
 Encoding: UTF-8
 RoxygenNote: 7.2.3
+URL: https://hfr.residualmetrics.com/, https://github.com/jpfitzinger/hfr
+BugReports: https://github.com/jpfitzinger/hfr/issues
