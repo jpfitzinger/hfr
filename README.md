@@ -88,5 +88,6 @@ interact with fitted `hfr` or `cv.hfr` objects.
 
 ## References
 
-Pfitzinger, J. (2022). Cluster Regularization via a Hierarchical Feature
-Regression. *arXiv 2107.04831\[statML\]*
+Pfitzinger, J. (2024). Cluster Regularization via a Hierarchical Feature
+Regression. *Journal of Econometrics and Statistics* (in press).
+<https://doi.org/10.1016/j.ecosta.2024.01.003>.

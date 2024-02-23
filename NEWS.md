@@ -22,3 +22,4 @@
 
 - Introduce handling of linearly dependent columns and columns with zero standard deviation in 'x'
 - Rename argument 'ridge_lambda' to 'l2_penalty'
+- Updated documentation
