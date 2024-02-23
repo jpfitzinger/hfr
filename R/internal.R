@@ -68,7 +68,7 @@
       if (sum(ix) == 1) {
         return(as.numeric(ix))
       } else {
-        signs <- sign(drop(crossprod(corr, as.numeric(ix))) - 1)
+        signs <- sign(drop(stats::cor(x, y)))
         signs[signs == 0] <- 1
         S_row <- as.numeric(ix) * signs
         return(S_row)
