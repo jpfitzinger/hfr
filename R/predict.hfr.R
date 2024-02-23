@@ -56,7 +56,9 @@ predict.hfr <- function(
     newdata <- cbind(1, newdata)
   }
 
-  pred <- as.numeric(newdata %*% stats::coef(object))
+  ix <- which(!is.na(stats::coef(object)))
+
+  pred <- as.numeric(newdata[, ix] %*% stats::coef(object)[ix])
 
   return(pred)
 

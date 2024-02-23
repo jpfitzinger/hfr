@@ -57,11 +57,14 @@ plot.cv.hfr <- function(
       stop("'kappa' must be in 'kappa' of the object")
     return_ix <- which(round(kappa, 6)==round(x$kappa, 6))
   }
+  if (any(is.na(x$coefficients)))
+    warning("removing variables with 'NA' coefficients")
 
   clust <- x$hgraph$cluster_object
   phi <- x$hgraph$shrinkage_vector[, return_ix]
   included_levels <- x$hgraph$included_levels
   coefs <- x$coefficients[, return_ix]
+  coefs <- coefs[!is.na(coefs)]
   if (x$intercept) coefs <- coefs[-1]
 
   aggr <- diag(length(phi))
@@ -74,8 +77,7 @@ plot.cv.hfr <- function(
   heights <- rep(0, length(included_levels))
   heights[rev(included_levels)] <- theta * dof
 
-  var_names <- rownames(x$coefficients)
-  if (x$intercept) var_names <- var_names[-1]
+  var_names <- names(coefs)
 
   expl_variance <- rep(NA, length(included_levels))
   expl_variance[included_levels] <- x$hgraph$explained_variance[, return_ix]

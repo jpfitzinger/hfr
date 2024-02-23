@@ -62,60 +62,21 @@ cv.hfr <- function(
   ...
 ) {
 
-  if (is.null(nobs <- nrow(x)))
-    stop("'x' must be a matrix")
-  if (nobs == 0L)
-    stop("0 (non-NA) cases")
-  nvars <- ncol(x)
-  if (nvars == 0L) {
+  args = .check_args(x = x, y = y, intercept = intercept, kappa = kappa,
+                     weights = weights, q = q, l2_penalty = l2_penalty, is_cv = TRUE)
+  if (args$nvars == 0L) {
     return(list(coefficients = numeric(), residuals = y,
                 fitted.values = 0 * y, dof = 0, clust = NULL,
                 intercept = intercept))
   }
-  ny <- NCOL(y)
-  if (is.matrix(y) && ny == 1)
-    y <- drop(y)
-  if (ny > 1)
-    stop("'y' must be a single response variable")
-  if (NROW(y) != nobs)
-    stop("incompatible dimensions")
-
-  if (any(is.na(y)) || any(is.na(x)))
-    stop("'NA' values in 'x' or 'y'")
-
-  if (any(kappa > 1) || any(kappa < 0)) {
-    stop("each 'kappa' must be between 0 and 1.")
-  }
-
-  if (!is.null(weights)) {
-    if (length(weights) != nobs)
-      stop("'weights' must have same length as 'y'")
-    if (any(is.na(weights)))
-      stop("'NA' values in 'weights'")
-    if (any(weights < 0))
-      stop("'weights' can only contain positive numerical values")
-    wts <- sqrt(weights)
-  } else {
-    wts <- rep(1, nobs)
-  }
-
   partial_method = match.arg(partial_method)
 
   if (is.null(foldid))
-    foldid = sample(rep(seq(nfolds), length = nobs))
+    foldid = sample(rep(seq(nfolds), length = args$nobs))
   else nfolds = max(foldid)
 
-  # Get feature names
-  var_names <- colnames(x)
-  if (is.null(var_names)) var_names <- paste("X", 1:ncol(x), sep = ".")
-  if (intercept) var_names <- c("(Intercept)", var_names)
-
-  # Convert 'x' to matrix
-  x <- data.matrix(x)
-
-  if (is.null(q)) {
-    q <- 1
-  }
+  x <- args$x
+  y <- args$y
 
   if (nfolds > 1) {
     mse <- c()
@@ -126,9 +87,6 @@ cv.hfr <- function(
       y_pred <- y[ix]
       x_fit <- x[!ix,,drop=FALSE]
       y_fit <- y[!ix]
-
-      if (any(apply(x_fit, 2, stats::sd)==0))
-        stop("Features can not have a standard deviation of zero.")
 
       if (standardize) {
         standard_mean <- apply(x_fit, 2, mean)
@@ -142,8 +100,11 @@ cv.hfr <- function(
         xs = x_fit
       }
 
-      v = .get_level_reg(xs, y_fit, wts[!ix], nvars, nobs, q, intercept, partial_method, ridge_lambda, ...)
-      meta_opt <- .get_meta_opt(y_fit, kappa, nvars, nobs, var_names, standardize, intercept, standard_sd, standard_mean, v)
+      v = .get_level_reg(xs, y_fit, args$wts[!ix], args$nvars, args$nobs, args$q,
+                         intercept, partial_method, args$l2_penalty, ...)
+      meta_opt <- .get_meta_opt(y_fit, args$kappa, args$nvars, args$nobs,
+                                args$var_names_excl, standardize, intercept,
+                                standard_sd, standard_mean, v)
 
       beta_mat <- meta_opt$beta
       opt_par_mat <- meta_opt$opt_par
@@ -153,14 +114,11 @@ cv.hfr <- function(
 
     }
     cv_mse <- colMeans(mse)
-    best_kappa <- kappa[which.min(cv_mse)]
+    best_kappa <- args$kappa[which.min(cv_mse)]
   } else {
     best_kappa <- NULL
     cv_mse <- NULL
   }
-
-  if (any(apply(x, 2, stats::sd)==0))
-    stop("Features can not have a standard deviation of zero.")
 
   if (standardize) {
     standard_mean <- apply(x, 2, mean)
@@ -174,11 +132,18 @@ cv.hfr <- function(
     xs <- x
   }
 
-  v = .get_level_reg(xs, y, wts, nvars, nobs, q, intercept, partial_method, ridge_lambda, ...)
-  meta_opt <- .get_meta_opt(y, kappa, nvars, nobs, var_names, standardize, intercept, standard_sd, standard_mean, v)
+  v = .get_level_reg(xs, y, args$wts, args$nvars, args$nobs, args$q, intercept,
+                     partial_method, args$l2_penalty, ...)
+  meta_opt <- .get_meta_opt(y, args$kappa, args$nvars, args$nobs,
+                            args$var_names_excl, standardize, intercept,
+                            standard_sd, standard_mean, v)
 
   beta_mat <- meta_opt$beta
   opt_par_mat <- meta_opt$opt_par
+
+  beta_mat_full <- array(NA, c(length(args$var_names), NCOL(beta_mat)),
+                         dimnames = list(args$var_names, colnames(beta_mat)))
+  beta_mat_full[rownames(beta_mat), colnames(beta_mat)] <- beta_mat
 
   if (intercept) fitted <- cbind(1, x) %*% beta_mat else fitted <- x %*% beta_mat
   resid <- y - fitted
@@ -199,8 +164,8 @@ cv.hfr <- function(
 
   out <- list(
     call = match.call(),
-    coefficients = beta_mat,
-    kappa = kappa,
+    coefficients = beta_mat_full,
+    kappa = args$kappa,
     best_kappa = best_kappa,
     cv_mse = cv_mse,
     fitted.values = fitted,

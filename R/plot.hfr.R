@@ -56,10 +56,14 @@ plot.hfr <- function(
   if (confidence_level > 1 || confidence_level < 0)
     stop("'confidence_level' must be a scalar between 0 and 1")
 
+  if (any(is.na(x$coefficients)))
+    warning("removing variables with 'NA' coefficients")
+
   clust <- x$hgraph$cluster_object
   phi <- x$hgraph$shrinkage_vector
   included_levels <- x$hgraph$included_levels
   coefs <- x$coefficients
+  coefs <- coefs[!is.na(coefs)]
   if (x$intercept) coefs <- coefs[-1]
 
   aggr <- diag(length(phi))
@@ -72,8 +76,7 @@ plot.hfr <- function(
   heights <- rep(0, length(included_levels))
   heights[rev(included_levels)] <- theta * dof
 
-  var_names <- names(x$coefficients)
-  if (x$intercept) var_names <- var_names[-1]
+  var_names <- names(coefs)
 
   expl_variance <- rep(NA, length(included_levels))
   expl_variance[included_levels] <- x$hgraph$explained_variance
@@ -88,6 +91,7 @@ plot.hfr <- function(
   }
 
   se <- se.avg(x)[-1]
+  se <- se[!is.na(se)]
   pvals <- stats::pt(abs(coefs / se), NROW(x$y) - x$df - 1, lower.tail = F)
   dashed <- names(pvals)[pvals > 1 - confidence_level]
 

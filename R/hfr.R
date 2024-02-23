@@ -46,7 +46,7 @@
 #'
 #' @seealso \code{\link{cv.hfr}}, \code{\link{se.avg}}, \code{\link{coef}}, \code{\link{plot}} and \code{\link{predict}} methods
 #'
-#' @importFrom stats sd
+#' @importFrom stats sd setNames
 
 
 hfr <- function(
@@ -62,59 +62,17 @@ hfr <- function(
   ...
   ) {
 
-  if (is.null(nobs <- nrow(x)))
-    stop("'x' must be a matrix")
-  if (nobs == 0L)
-    stop("0 (non-NA) cases")
-  nvars <- ncol(x)
-  if (nvars == 0L) {
+  args = .check_args(x = x, y = y, intercept = intercept, kappa = kappa,
+                     weights = weights, q = q, l2_penalty = l2_penalty, is_cv = FALSE)
+  if (args$nvars == 0L) {
     return(list(coefficients = numeric(), residuals = y,
                 fitted.values = 0 * y, dof = 0, clust = NULL,
                 intercept = intercept))
   }
-  ny <- NCOL(y)
-  if (is.matrix(y) && ny == 1)
-    y <- drop(y)
-  if (ny > 1)
-    stop("'y' must be a single response variable")
-  if (NROW(y) != nobs)
-    stop("incompatible dimensions")
-
-  if (any(is.na(y)) || any(is.na(x)))
-    stop("'NA' values in 'x' or 'y'")
-
-  if (kappa > 1 || kappa < 0) {
-    stop("'kappa' must be between 0 and 1")
-  }
-
-  if (!is.null(weights)) {
-    if (length(weights) != nobs)
-      stop("'weights' must have same length as 'y'")
-    if (any(is.na(weights)))
-      stop("'NA' values in 'weights'")
-    if (any(weights < 0))
-      stop("'weights' can only contain positive numerical values")
-    wts <- sqrt(weights)
-  } else {
-    wts <- rep(1, nobs)
-  }
-
   partial_method = match.arg(partial_method)
 
-  # Get feature names
-  var_names <- colnames(x)
-  if (is.null(var_names)) var_names <- paste("X", 1:ncol(x), sep = ".")
-  if (intercept) var_names <- c("(Intercept)", var_names)
-
-  # Convert 'x' to matrix
-  x <- data.matrix(x)
-
-  if (is.null(q)) {
-    q <- 1
-  }
-
-  if (any(apply(x, 2, stats::sd)==0))
-    stop("Features can not have a standard deviation of zero.")
+  x <- args$x
+  y <- args$y
 
   if (standardize) {
     standard_mean <- apply(x, 2, mean)
@@ -128,14 +86,19 @@ hfr <- function(
     xs <- x
   }
 
-  v = .get_level_reg(xs, y, wts, nvars, nobs, q, intercept, partial_method, ridge_lambda, ...)
-  meta_opt <- .get_meta_opt(y, kappa, nvars, nobs, var_names, standardize, intercept, standard_sd, standard_mean, v)
+  v = .get_level_reg(xs, y, args$wts, args$nvars, args$nobs, args$q, intercept,
+                     partial_method, args$l2_penalty, ...)
+  meta_opt <- .get_meta_opt(y, args$kappa, args$nvars, args$nobs, args$var_names_excl,
+                            standardize, intercept, standard_sd, standard_mean, v)
 
   beta <- drop(meta_opt$beta)
   opt_par <- drop(meta_opt$opt_par)
 
   if (intercept) fitted <- as.numeric(cbind(1, x) %*% beta) else fitted <- as.numeric(x %*% beta)
   resid <- as.numeric(y - fitted)
+
+  beta_full <- stats::setNames(rep(NA, length(args$var_names)), args$var_names)
+  beta_full[args$var_names_excl] <- beta
 
   nlevels <- dim(v$fit_mat)[2]
   fit_mat_adj <- v$fit_mat
@@ -152,8 +115,8 @@ hfr <- function(
 
   out <- list(
     call = match.call(),
-    coefficients = beta,
-    kappa = kappa,
+    coefficients = beta_full,
+    kappa = args$kappa,
     fitted.values = fitted,
     residuals = resid,
     x = x,

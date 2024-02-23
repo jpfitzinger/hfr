@@ -77,7 +77,8 @@ se.avg <- function(
     }
   }
 
-  names(stderr) <- names(object$coefficients)
+  stderr_full <- stats::setNames(rep(NA, length(object$coefficients)), names(object$coefficients))
+  stderr_full[!is.na(object$coefficients)] <- stderr
 
   return(stderr)
 

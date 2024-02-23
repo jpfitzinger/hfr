@@ -43,7 +43,7 @@
 
   }
 
-  if (nvars > 2) {
+  if (nvars > 2 & !any(is.na(distmat))) {
     clust <- do.call(hclust, append(list(d = distmat), hclust_args))
   } else {
     clust <- do.call(hclust, append(list(d = stats::dist(corr)), hclust_args))

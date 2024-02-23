@@ -74,7 +74,8 @@ predict.cv.hfr <- function(
   }
 
   coefs <- stats::coef(object)[, return_ix]
-  pred <- as.numeric(newdata %*% coefs)
+  ix <- which(!is.na(coefs))
+  pred <- as.numeric(newdata[, ix] %*% coefs[ix])
 
   return(pred)
 
