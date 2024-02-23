@@ -15,7 +15,7 @@ cv.hfr(
   nfolds = 10,
   foldid = NULL,
   partial_method = c("pairwise", "shrinkage"),
-  ridge_lambda = 0,
+  l2_penalty = 0,
   ...
 )
 }
@@ -40,7 +40,7 @@ cv.hfr(
 
 \item{partial_method}{Indicate whether to use pairwise partial correlations, or shrinkage partial correlations.}
 
-\item{ridge_lambda}{Optional penalty for level-specific regressions (useful in high-dimensional case)}
+\item{l2_penalty}{Optional penalty for level-specific regressions (useful in high-dimensional case)}
 
 \item{...}{Additional arguments passed to \code{hclust}.}
 }

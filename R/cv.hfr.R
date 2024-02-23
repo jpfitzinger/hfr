@@ -24,7 +24,7 @@
 #' @param nfolds The number of folds for k-fold cross validation. Default is \code{nfolds=10}.
 #' @param foldid An optional vector of values between \code{1} and \code{nfolds} identifying what fold each observation is in. If supplied, \code{nfolds} can be missing.
 #' @param partial_method Indicate whether to use pairwise partial correlations, or shrinkage partial correlations.
-#' @param ridge_lambda Optional penalty for level-specific regressions (useful in high-dimensional case)
+#' @param l2_penalty Optional penalty for level-specific regressions (useful in high-dimensional case)
 #' @param ...  Additional arguments passed to \code{hclust}.
 #' @return A 'cv.hfr' regression object.
 #' @author Johann Pfitzinger
@@ -58,7 +58,7 @@ cv.hfr <- function(
   nfolds = 10,
   foldid = NULL,
   partial_method = c("pairwise", "shrinkage"),
-  ridge_lambda = 0,
+  l2_penalty = 0,
   ...
 ) {
 
