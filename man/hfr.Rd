@@ -70,9 +70,7 @@ coef(fit)
 
 }
 \references{
-Pfitzinger, J. (2022).
-Cluster Regularization via a Hierarchical Feature Regression.
-arXiv 2107.04831[statML]
+Pfitzinger, Johann (2024). Cluster Regularization via a Hierarchical Feature Regression. _Journal of Econometrics and Statistics_ (in press). URL https://doi.org/10.1016/j.ecosta.2024.01.003.
 }
 \seealso{
 \code{\link{cv.hfr}}, \code{\link{se.avg}}, \code{\link{coef}}, \code{\link{plot}} and \code{\link{predict}} methods

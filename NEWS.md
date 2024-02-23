@@ -17,3 +17,8 @@
 ## hfr 0.6.2
 
 - Minor bugfixes in se.avg()
+
+## hfr 0.7.0
+
+- Introduce handling of linearly dependent columns and columns with zero standard deviation in 'x'
+- Rename argument 'ridge_lambda' to 'l2_penalty'
