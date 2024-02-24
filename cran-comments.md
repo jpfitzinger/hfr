@@ -1,6 +1,10 @@
 ## Summary of changes
 
-- Minor bugfixes in se.avg()
+This release makes the following changes:
+
+- Introduce handling of linearly dependent columns and columns with zero standard deviation in 'x'
+- Rename argument 'ridge_lambda' to 'l2_penalty'
+- Updated documentation
 
 ## R CMD check results
 There were no ERRORs, WARNINGs or NOTEs. 
