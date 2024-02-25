@@ -234,8 +234,12 @@
   Xy <- crossprod(X, y)
   invXX <- solve(XX + lambda * n * diag(p))
   beta <- drop(invXX %*% Xy)
-  var_hat <- sum((y - X %*% beta)^2) / (n - p)
-  std_err <- sqrt(diag(invXX * var_hat))
+  if (n > p) {
+    var_hat <- sum((y - X %*% beta)^2) / (n - p)
+    std_err <- sqrt(diag(invXX * var_hat))
+  } else {
+    std_err <- rep(NA, length(beta))
+  }
   return(list(coefficients = beta, stderr = std_err))
 
 }
