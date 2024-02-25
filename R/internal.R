@@ -117,6 +117,14 @@
 
   coef_mat <- sapply(coef_list, function(x) x)
 
+  # add intercept level
+  if (intercept) {
+    coef_mat <- cbind(coef_mat, c(mean(y), rep(0, nvars)))
+    mod_list[[nvars + 1]] <- list(coefficients = mean(y), stderr = sd(y)/sqrt(nobs))
+    fit_mat <- cbind(fit_mat, mean(y))
+    dof <- c(dof+1, 1)
+  }
+
   return(list(
     coef_mat = coef_mat,
     mod_list = mod_list,
@@ -143,11 +151,11 @@
   opt_par_mat <- c()
   for (i in 1:grid_size) {
 
-    dof_constraint <- 1e-4 + kappa[i] * (min(nvars, nobs-2)-1e-4-1e-8)
+    dof_constraint <- intercept + kappa[i] * (min(nvars, nobs-2)-1e-8)
     opt <- quadprog::solve.QP(Dmat = Dmat,
                               dvec = dvec,
-                              Amat = cbind(v$dof, Amat),
-                              bvec = c(dof_constraint, bvec),
+                              Amat = cbind(v$dof, rep(-1, nvars+intercept), rep(1, nvars+intercept), Amat),
+                              bvec = c(dof_constraint, -1-1e-6, 1-1e-6, bvec),
                               meq = 1)
 
     opt_par <- opt$solution

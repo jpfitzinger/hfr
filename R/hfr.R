@@ -127,7 +127,7 @@ hfr <- function(
     residuals = resid,
     x = x,
     y = y,
-    df = round(as.numeric(crossprod(v$dof, opt_par)), 4) + intercept,
+    df = round(as.numeric(crossprod(v$dof, opt_par)), 4),
     hgraph = list(cluster_object = v$clust, shrinkage_vector = opt_par,
                   included_levels = v$included_levels,
                   explained_variance = explained_variance,

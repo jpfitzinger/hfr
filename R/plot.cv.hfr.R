@@ -57,6 +57,8 @@ plot.cv.hfr <- function(
       stop("'kappa' must be in 'kappa' of the object")
     return_ix <- which(round(kappa, 6)==round(x$kappa, 6))
   }
+  if (kappa == 0)
+    stop("'kappa' must be larger than 0 to plot")
   if (any(is.na(x$coefficients)))
     warning("removing variables with 'NA' coefficients")
 
@@ -65,7 +67,12 @@ plot.cv.hfr <- function(
   included_levels <- x$hgraph$included_levels
   coefs <- x$coefficients[, return_ix]
   coefs <- coefs[!is.na(coefs)]
-  if (x$intercept) coefs <- coefs[-1]
+  explained_var <- x$hgraph$explained_variance[, return_ix]
+  if (x$intercept) {
+    coefs <- coefs[-1]
+    phi <- phi[-length(phi)]
+    explained_var <- explained_var[-1]
+  }
 
   aggr <- diag(length(phi))
   aggr[lower.tri(aggr)] <- 1
@@ -79,18 +86,18 @@ plot.cv.hfr <- function(
 
   var_names <- names(coefs)
 
-  expl_variance <- rep(NA, length(included_levels))
-  expl_variance[included_levels] <- x$hgraph$explained_variance[, return_ix]
-  for (i in length(expl_variance):1) {
-    if (is.na(expl_variance[i])) {
-      if (i==length(expl_variance)) {
-        expl_variance[i] <- 0
+  plot_expl_var_bar <- rep(NA, length(included_levels))
+  plot_expl_var_bar[included_levels] <- explained_var
+  for (i in length(plot_expl_var_bar):1) {
+    if (is.na(plot_expl_var_bar[i])) {
+      if (i==length(plot_expl_var_bar)) {
+        plot_expl_var_bar[i] <- 0
       } else {
-        expl_variance[i] <- expl_variance[i+1]
+        plot_expl_var_bar[i] <- plot_expl_var_bar[i+1]
       }
     }
   }
 
-  .draw_dendro(clust, coefs, heights, expl_variance, var_names, x$df[return_ix], show_details, max_leaf_size)
+  .draw_dendro(clust, coefs, heights, plot_expl_var_bar, var_names, x$df[return_ix], show_details, max_leaf_size)
 
 }

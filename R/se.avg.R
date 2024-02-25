@@ -60,26 +60,26 @@ se.avg <- function(
   S <- object$hgraph$full_level_output$S
 
   if (intercept) {
-    lvl_reg_var <- sapply(1:nlevels, function(i) c(lvl_reg[[i]]$stderr[1], abs(t(S[[i]])) %*% lvl_reg[[i]]$stderr[-1]))^2
+    lvl_reg_var <- sapply(1:(nlevels-1), function(i) c(lvl_reg[[i]]$stderr[1], abs(t(S[[i]])) %*% lvl_reg[[i]]$stderr[-1]))^2
+    lvl_reg_var <- cbind(lvl_reg_var, c(lvl_reg[[nlevels]]$stderr^2, rep(0, nrow(lvl_reg_var)-1)))
   } else {
     lvl_reg_var <- sapply(1:nlevels, function(i) abs(t(S[[i]])) %*% lvl_reg[[i]]$stderr)^2
   }
 
 
-  stderr <- drop(sqrt((lvl_reg_var + beta_sqdiff) %*% phi))
+  stderr <- drop(sqrt(pmax(0, (lvl_reg_var + beta_sqdiff) %*% phi)))
+  if (intercept) stderr <- stderr[-1]
 
   if (standardize) {
     standard_sd <- apply(object$x, 2, stats::sd)
-    if (intercept) {
-      stderr[-1] <- stderr[-1] / standard_sd
-      } else {
-        stderr <- stderr / standard_sd
-    }
+    stderr <- stderr / standard_sd
   }
 
-  stderr_full <- stats::setNames(rep(NA, length(object$coefficients)), names(object$coefficients))
-  stderr_full[!is.na(object$coefficients)] <- stderr
+  coefs <- object$coefficients
+  if (intercept) coefs <- coefs[-1]
+  stderr_full <- stats::setNames(rep(NA, length(coefs)), names(coefs))
+  stderr_full[!is.na(coefs)] <- stderr
 
-  return(stderr)
+  return(stderr_full)
 
 }
