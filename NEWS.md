@@ -23,3 +23,7 @@
 - Introduce handling of linearly dependent columns and columns with zero standard deviation in 'x'
 - Rename argument 'ridge_lambda' to 'l2_penalty'
 - Updated documentation
+
+## hfr 0.7.1
+
+- fix handling of 'kappa' values < 1/k in the presence of intercept
