@@ -1,6 +1,7 @@
 test_that("cv_hfr", {
-  x <- model.matrix(medv ~ 0 + . + crim*tax, MASS::Boston)
-  y <- MASS::Boston$medv
+  data("Boston", package = "MASS")
+  x <- model.matrix(medv ~ 0 + . + crim*tax, Boston)
+  y <- Boston$medv
   expect_no_error(mod_1 <- cv.hfr(x, y))
 
   expect_no_error(coef(mod_1))
@@ -15,9 +16,10 @@ test_that("cv_hfr", {
 })
 
 test_that("hfr-linear-dep", {
-  x <- model.matrix(medv ~ 0 + . + crim*tax, MASS::Boston)
+  data("Boston", package = "MASS")
+  x <- model.matrix(medv ~ 0 + . + crim*tax, Boston)
+  y <- Boston$medv
   x[,1] <- x[,2]
-  y <- MASS::Boston$medv
   expect_warning(mod_1 <- cv.hfr(x, y))
 
   expect_no_error(coef(mod_1))
@@ -31,9 +33,10 @@ test_that("hfr-linear-dep", {
 })
 
 test_that("hfr-const-col", {
-  x <- model.matrix(medv ~ 0 + . + crim*tax, MASS::Boston)
+  data("Boston", package = "MASS")
+  x <- model.matrix(medv ~ 0 + . + crim*tax, Boston)
+  y <- Boston$medv
   x[,1] <- 1
-  y <- MASS::Boston$medv
   expect_no_error(mod_1 <- cv.hfr(x, y))
 
   expect_no_error(coef(mod_1))
