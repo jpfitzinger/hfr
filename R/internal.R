@@ -152,11 +152,26 @@
   for (i in 1:grid_size) {
 
     dof_constraint <- intercept + kappa[i] * (min(nvars, nobs-2)-1e-8)
-    opt <- quadprog::solve.QP(Dmat = Dmat,
-                              dvec = dvec,
-                              Amat = cbind(v$dof, rep(-1, nvars+intercept), rep(1, nvars+intercept), Amat),
-                              bvec = c(dof_constraint, -1-1e-6, 1-1e-6, bvec),
-                              meq = 1)
+    for (eps in c(1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2)) {
+      success <- tryCatch(
+        {
+          opt <- quadprog::solve.QP(Dmat = Dmat,
+                             dvec = dvec,
+                             Amat = cbind(v$dof, rep(-1, nvars+intercept), rep(1, nvars+intercept), Amat),
+                             bvec = c(dof_constraint, -1-eps, 1-eps, bvec),
+                             meq = 1)
+          TRUE
+        },
+        error = function(cond) {
+          FALSE
+        }
+      )
+      if (success)
+        break
+    }
+    if (!success)
+      stop("optimization failed. check the input data.")
+
 
     opt_par <- opt$solution
 
